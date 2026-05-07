@@ -11,65 +11,184 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-gray-100">
-    <!-- Wadah Aplikasi -->
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useMemo, useRef } = React;
 
-        // --- KOMPONEN IKON (SVG Inline) ---
+        // --- KOMPONEN IKON ---
         const IconDashboard = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>;
         const IconFileText = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>;
         const IconClipboardCheck = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>;
         const IconBanknote = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>;
         const IconAlertCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
-        const IconSearch = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
         const IconCheckCircle2 = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
         const IconXCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>;
         const IconClock = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
         const IconPlusCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>;
         const IconMapPin = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>;
-        const IconSparkles = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>;
-        const IconBot = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" x2="8" y1="16" y2="16"/><line x1="16" x2="16" y1="16" y2="16"/></svg>;
+        const IconEdit = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>;
+        const IconTrash = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+        const IconGripVertical = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>;
+        const IconChevronDown = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
 
-        const KECAMATAN_LIST = ['Gresik', 'Kebomas', 'Manyar', 'Cerme'];
-        const SEKOLAH_DATA = {
-          'Gresik': ['SDN 1 Gresik', 'SDN 2 Gresik', 'SMPN 1 Gresik', 'SMPN 2 Gresik'],
-          'Kebomas': ['SDN 1 Kebomas', 'SDN 2 Kebomas', 'SMPN 1 Kebomas'],
-          'Manyar': ['SDN 1 Manyar', 'SDN 2 Manyar', 'SMPN 1 Manyar'],
-          'Cerme': ['SDN 1 Cerme', 'SDN 2 Cerme', 'SMPN 1 Cerme']
+        const KECAMATAN_PIC = {
+          'Gresik': 'Dimas', 'Cerme': 'Dimas', 'Duduksampeyan': 'Dimas', 'Benjeng': 'Dimas', 'Menganti': 'Dimas', 'Tambak': 'Dimas',
+          'Balongpanggang': 'Eva', 'Kedamean': 'Eva', 'Sidayu': 'Eva', 'Dukun': 'Eva', 'Ujungpangkah': 'Eva', 'Panceng': 'Eva',
+          'Kebomas': 'Viya', 'Manyar': 'Viya', 'Driyorejo': 'Viya', 'Wringinanom': 'Viya', 'Bungah': 'Viya', 'Sangkapura': 'Viya'
         };
 
+        const KECAMATAN_LIST = Object.keys(KECAMATAN_PIC).sort();
+
+        const generateSchools = (start, end) => {
+          const schools = [];
+          for (let i = start; i <= end; i++) {
+            schools.push(`UPT SDN ${i} GRESIK`);
+          }
+          return schools;
+        };
+
+        const SEKOLAH_DATA = {
+          'Gresik': generateSchools(1, 15), 'Cerme': generateSchools(52, 76), 'Duduksampeyan': generateSchools(77, 92),
+          'Benjeng': generateSchools(93, 117), 'Menganti': generateSchools(214, 239), 'Tambak': generateSchools(361, 389),
+          'Balongpanggang': generateSchools(118, 143), 'Kedamean': generateSchools(193, 213), 'Sidayu': generateSchools(259, 272),
+          'Dukun': generateSchools(273, 292), 'Ujungpangkah': generateSchools(293, 308), 'Panceng': generateSchools(309, 324),
+          'Kebomas': generateSchools(16, 35), 'Manyar': generateSchools(36, 51), 'Driyorejo': generateSchools(144, 169),
+          'Wringinanom': generateSchools(170, 192), 'Bungah': generateSchools(240, 258), 'Sangkapura': generateSchools(325, 360)
+        };
+
+        const RINCIAN_OPTIONS = [
+          "5.1.02.01.01.0002 Belanja Bahan-Bahan Kimia",
+          "5.1.02.01.01.0012 Belanja Bahan-Bahan Lainnya",
+          "5.1.02.01.01.0024 Belanja Alat Tulis Kantor",
+          "5.1.02.01.01.0025 Belanja Kertas dan Cover",
+          "5.1.02.01.01.0026 Belanja Bahan Cetak dan Penggandaan",
+          "5.1.02.01.01.0027 Belanja Benda Pos",
+          "5.1.02.01.01.0029 Belanja Bahan Komputer",
+          "5.1.02.01.01.0030 Belanja Perabot Kantor",
+          "5.1.02.01.01.0031 Belanja Alat Listrik",
+          "5.1.02.01.01.0032 Belanja Seragam Sekolah",
+          "5.1.02.01.01.0034 Belanja Perlengkapan Pendukung Olahraga",
+          "5.1.02.01.01.0035 Belanja Suvenir/Cendera Mata",
+          "5.1.02.01.01.0037 Belanja Obat-Obatan"
+        ];
+
+        // --- KOMPONEN CUSTOM COMBOBOX ---
+        const CustomComboBox = ({ name, value, defaultValue, onChange, options, placeholder, required, className }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [inputValue, setInputValue] = useState(value !== undefined ? value : (defaultValue || ''));
+            const [isTyping, setIsTyping] = useState(false);
+            const wrapperRef = useRef(null);
+
+            useEffect(() => {
+                if (value !== undefined) {
+                    setInputValue(value);
+                }
+            }, [value]);
+
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                        setIsOpen(false);
+                        setIsTyping(false);
+                    }
+                };
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => document.removeEventListener('mousedown', handleClickOutside);
+            }, []);
+
+            const displayOptions = isTyping && inputValue
+                ? options.filter(opt => opt.toLowerCase().includes(inputValue.toLowerCase()))
+                : options;
+
+            return (
+                <div ref={wrapperRef} className="relative w-full">
+                    <input
+                        type="text"
+                        name={name}
+                        value={inputValue}
+                        onChange={(e) => {
+                            setInputValue(e.target.value);
+                            setIsTyping(true);
+                            setIsOpen(true);
+                            if (onChange) onChange(e);
+                        }}
+                        onFocus={() => {
+                            setIsOpen(true);
+                            setIsTyping(false);
+                        }}
+                        onClick={() => {
+                            setIsOpen(true);
+                            setIsTyping(false);
+                        }}
+                        className={`${className} pr-10`} 
+                        placeholder={placeholder}
+                        required={required}
+                        autoComplete="off"
+                    />
+                    <div 
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                        onClick={() => {
+                            setIsOpen(!isOpen);
+                            setIsTyping(false);
+                        }}
+                    >
+                        <IconChevronDown size={18} className="text-gray-400 hover:text-gray-700 transition" />
+                    </div>
+
+                    {isOpen && (
+                        <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-2xl max-h-60 overflow-y-auto mt-1 top-full left-0">
+                            {displayOptions.length > 0 ? displayOptions.map((opt, idx) => (
+                                <li
+                                    key={idx}
+                                    className="px-4 py-2.5 cursor-pointer hover:bg-blue-100 text-sm border-b border-gray-100 last:border-b-0 text-gray-700 transition"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault(); 
+                                        setInputValue(opt);
+                                        setIsOpen(false);
+                                        setIsTyping(false);
+                                        if (onChange) {
+                                            onChange({ target: { name, value: opt } });
+                                        }
+                                    }}
+                                >
+                                    {opt}
+                                </li>
+                            )) : (
+                                <li className="px-4 py-2.5 text-sm text-gray-500 italic bg-gray-50" onMouseDown={(e) => {e.preventDefault(); setIsOpen(false);}}>
+                                    Rincian manual digunakan: <span className="font-semibold text-gray-700">{inputValue}</span>
+                                </li>
+                            )}
+                        </ul>
+                    )}
+                </div>
+            );
+        };
+
+        const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+
         const initialData = [
-          { id: 'SPJ-001', kecamatan: 'Gresik', sekolah: 'SDN 1 Gresik', tanggal: '2026-05-01', triwulan: 'Triwulan 2', rincian: 'Pembelian Buku Teks, ATK, Listrik', nominal: 15000000, status: 'Menunggu Verifikasi', catatan: '' },
-          { id: 'SPJ-002', kecamatan: 'Kebomas', sekolah: 'SMPN 1 Kebomas', tanggal: '2026-05-02', triwulan: 'Triwulan 2', rincian: 'Honor Guru Honorer, Perawatan Komputer', nominal: 25000000, status: 'Siap Cair', catatan: '' },
-          { id: 'SPJ-003', kecamatan: 'Manyar', sekolah: 'SDN 1 Manyar', tanggal: '2026-05-03', triwulan: 'Triwulan 2', rincian: 'Pengecatan Pagar, Konsumsi Rapat', nominal: 5000000, status: 'Revisi', catatan: 'Nota pembelian cat kurang stempel toko.' },
-          { id: 'SPJ-004', kecamatan: 'Cerme', sekolah: 'SMPN 1 Cerme', tanggal: '2026-05-04', triwulan: 'Triwulan 3', rincian: 'Pembelian Seragam Ekstrakurikuler', nominal: 12000000, status: 'Ditunda', catatan: 'Kegiatan untuk Triwulan 3, tahan dulu sampai Juli.' },
+          { id: 'SPJ-001', kecamatan: 'Gresik', sekolah: 'UPT SDN 1 GRESIK', pic: 'Dimas', tanggal: '2026-05-01', triwulan: 'Triwulan 1', rincian: '5.1.02.01.01.0024 Belanja Alat Tulis Kantor', nominal: 1811880, status: 'Menunggu Verifikasi', catatan: '' },
+          { id: 'SPJ-002', kecamatan: 'Kebomas', sekolah: 'UPT SDN 16 GRESIK', pic: 'Viya', tanggal: '2026-05-02', triwulan: 'Triwulan 2', rincian: '5.1.02.01.01.0029 Belanja Bahan Komputer', nominal: 2500000, status: 'Siap Cair', catatan: '' },
         ];
 
         function App() {
           const [activeTab, setActiveTab] = useState('dashboard');
           const [dataSpj, setDataSpj] = useState(initialData);
-          const [searchTerm, setSearchTerm] = useState('');
-          const [formKecamatan, setFormKecamatan] = useState('');
+          
+          const [addForm, setAddForm] = useState({
+            kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1'
+          });
+
           const [isModalOpen, setIsModalOpen] = useState(false);
           const [selectedSpj, setSelectedSpj] = useState(null);
           const [verdict, setVerdict] = useState('Siap Cair'); 
           const [notes, setNotes] = useState('');
           
-          const [aiReviewResult, setAiReviewResult] = useState('');
-          const [isAiReviewLoading, setIsAiReviewLoading] = useState(false);
-          const [isAiRefineLoading, setIsAiRefineLoading] = useState(false);
+          const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+          const [editingSpj, setEditingSpj] = useState(null);
 
-          const callGeminiAPI = async (promptText) => {
-            // Catatan: Karena ini berjalan murni di frontend HTML, fungsi ini menggunakan simulasi timer agar aman.
-            // Di sistem sesungguhnya, API call harus dilakukan di backend.
-            return new Promise(resolve => {
-                setTimeout(() => resolve("Simulasi Respon AI: Berdasarkan rincian ini, periksa kelengkapan kuitansi dan stempel toko yang bersangkutan. Nominal terlihat wajar."), 1500);
-            });
-          };
-
-          const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+          const [draggedId, setDraggedId] = useState(null);
 
           const stats = {
             total: dataSpj.length,
@@ -79,61 +198,82 @@
             ditunda: dataSpj.filter(d => d.status === 'Ditunda').length,
           };
 
+          const handleFormChange = (e) => {
+            const { name, value } = e.target;
+            let newForm = { ...addForm, [name]: value };
+
+            if (name === 'kecamatan') {
+              newForm.sekolah = '';
+            }
+
+            setAddForm(newForm);
+          };
+
           const handleAddNewSpj = (e) => {
             e.preventDefault();
-            const formData = new FormData(e.target);
             const today = new Date().toISOString().split('T')[0];
             const newSpj = {
-              id: `SPJ-00${dataSpj.length + 1}`,
-              kecamatan: formData.get('kecamatan'),
-              sekolah: formData.get('sekolah'),
-              tanggal: today,
-              triwulan: formData.get('triwulan'),
-              rincian: formData.get('rincian'),
-              nominal: Number(formData.get('nominal')),
-              status: 'Menunggu Verifikasi',
-              catatan: ''
+              id: `SPJ-00${dataSpj.length + 1}`, kecamatan: addForm.kecamatan, pic: KECAMATAN_PIC[addForm.kecamatan],
+              sekolah: addForm.sekolah, tanggal: today, triwulan: addForm.triwulan,
+              rincian: addForm.rincian, nominal: Number(addForm.nominal), status: 'Menunggu Verifikasi', catatan: ''
             };
             setDataSpj([newSpj, ...dataSpj]);
-            e.target.reset();
-            setFormKecamatan('');
+            setAddForm({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1' });
             alert('SPJ Baru berhasil ditambahkan ke antrian!');
             setActiveTab('verifikasi');
           };
 
-          const openVerifyModal = (spj) => {
-            setSelectedSpj(spj);
-            setVerdict('Siap Cair');
-            setNotes('');
-            setAiReviewResult(''); 
-            setIsModalOpen(true);
-          };
+          const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setIsModalOpen(true); };
 
           const submitVerification = () => {
             const today = new Date().toISOString().split('T')[0];
             const updatedData = dataSpj.map(spj => {
-              if (spj.id === selectedSpj.id) {
-                return { ...spj, status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, tanggal: today };
+              if (spj.id === selectedSpj.id) return { ...spj, status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, tanggal: today };
+              return spj;
+            });
+            setDataSpj(updatedData); setIsModalOpen(false);
+          };
+
+          const handleDeleteSpj = (id) => {
+            if (window.confirm('Hapus data SPJ ini secara permanen?')) setDataSpj(dataSpj.filter(spj => spj.id !== id));
+          };
+
+          const handleOpenEdit = (spj) => { setEditingSpj(spj); setIsEditModalOpen(true); };
+
+          const handleSaveEdit = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const selectedKecamatan = formData.get('kecamatan');
+            const updatedData = dataSpj.map(spj => {
+              if (spj.id === editingSpj.id) {
+                return {
+                  ...spj, kecamatan: selectedKecamatan, pic: KECAMATAN_PIC[selectedKecamatan],
+                  sekolah: formData.get('sekolah'), triwulan: formData.get('triwulan'),
+                  nominal: Number(formData.get('nominal')), rincian: formData.get('rincian'),
+                };
               }
               return spj;
             });
-            setDataSpj(updatedData);
-            setIsModalOpen(false);
+            setDataSpj(updatedData); setIsEditModalOpen(false); setEditingSpj(null);
           };
 
-          const handleAiReview = async () => {
-            setIsAiReviewLoading(true); setAiReviewResult('');
-            const prompt = `Analisis kewajaran SPJ: Sekolah ${selectedSpj.sekolah}, Total Rp ${selectedSpj.nominal}, Rincian "${selectedSpj.rincian}".`;
-            const result = await callGeminiAPI(prompt);
-            setAiReviewResult(result); setIsAiReviewLoading(false);
+          const handleDragStart = (e, id) => { setDraggedId(id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); };
+          const handleDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+          const handleDrop = (e, targetId) => {
+            e.preventDefault();
+            if (!draggedId || draggedId === targetId) return setDraggedId(null);
+            const draggedIdx = dataSpj.findIndex(item => item.id === draggedId);
+            const targetIdx = dataSpj.findIndex(item => item.id === targetId);
+            if (draggedIdx !== -1 && targetIdx !== -1) {
+              const newData = [...dataSpj];
+              const [removed] = newData.splice(draggedIdx, 1);
+              newData.splice(targetIdx, 0, removed);
+              setDataSpj(newData);
+            }
+            setDraggedId(null);
           };
 
-          const handleAiRefineNotes = async () => {
-            setIsAiRefineLoading(true);
-            const result = await new Promise(resolve => setTimeout(() => resolve("Mohon melengkapi berkas dengan stempel resmi dari toko terkait."), 1000));
-            setNotes(result);
-            setIsAiRefineLoading(false);
-          };
+          const handleDragEnd = () => { setDraggedId(null); };
 
           const renderDashboard = () => (
             <div className="space-y-6">
@@ -156,16 +296,6 @@
                   <div><p className="text-sm text-gray-500">Revisi / Ditunda</p><p className="text-2xl font-bold">{stats.revisi + stats.ditunda}</p></div>
                 </div>
               </div>
-              
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 className="text-lg font-semibold mb-4 text-gray-800">Grafik Status Terkini</h3>
-                <div className="w-full h-4 rounded-full bg-gray-200 flex overflow-hidden">
-                  <div style={{width: `${(stats.siapCair/stats.total)*100}%`}} className="bg-green-500" title="Siap Cair"></div>
-                  <div style={{width: `${(stats.menunggu/stats.total)*100}%`}} className="bg-yellow-400" title="Menunggu"></div>
-                  <div style={{width: `${(stats.revisi/stats.total)*100}%`}} className="bg-red-500" title="Revisi"></div>
-                  <div style={{width: `${(stats.ditunda/stats.total)*100}%`}} className="bg-gray-500" title="Ditunda"></div>
-                </div>
-              </div>
             </div>
           );
 
@@ -175,61 +305,91 @@
               <form onSubmit={handleAddNewSpj} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                    <select required name="kecamatan" value={formKecamatan} onChange={(e) => setFormKecamatan(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-sm font-medium text-gray-700">Kecamatan</label>
+                      {addForm.kecamatan && <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">PIC: {KECAMATAN_PIC[addForm.kecamatan]}</span>}
+                    </div>
+                    <select required name="kecamatan" value={addForm.kecamatan} onChange={handleFormChange} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                       <option value="">-- Pilih Kecamatan --</option>
                       {KECAMATAN_LIST.map(kec => <option key={kec} value={kec}>{kec}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
-                    <select required name="sekolah" disabled={!formKecamatan} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
+                    <select required name="sekolah" value={addForm.sekolah} onChange={handleFormChange} disabled={!addForm.kecamatan} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
                       <option value="">-- Pilih Sekolah --</option>
-                      {formKecamatan && SEKOLAH_DATA[formKecamatan]?.map(sek => <option key={sek} value={sek}>{sek}</option>)}
+                      {addForm.kecamatan && SEKOLAH_DATA[addForm.kecamatan]?.map(sek => <option key={sek} value={sek}>{sek}</option>)}
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                
+                <div className="relative z-20">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Belanja Singkat</label>
+                  <CustomComboBox 
+                      name="rincian" 
+                      value={addForm.rincian} 
+                      onChange={handleFormChange} 
+                      options={RINCIAN_OPTIONS} 
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+                      placeholder="Pilih rekening atau ketik bebas..."
+                      required 
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 relative z-10">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                    <input required name="nominal" value={addForm.nominal} onChange={handleFormChange} type="number" min="0" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="10000000" />
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Triwulan Pelaksanaan</label>
-                    <select required name="triwulan" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <select required name="triwulan" value={addForm.triwulan} onChange={handleFormChange} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium">
                       <option value="Triwulan 1">Triwulan 1 (Jan-Mar)</option><option value="Triwulan 2">Triwulan 2 (Apr-Jun)</option><option value="Triwulan 3">Triwulan 3 (Jul-Sep)</option><option value="Triwulan 4">Triwulan 4 (Okt-Des)</option>
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
-                    <input required name="nominal" type="number" min="0" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="10000000" />
-                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Belanja Singkat</label>
-                  <textarea required name="rincian" rows="3" className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Buku, perawatan lab..."></textarea>
-                </div>
-                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">Simpan ke Antrian Verifikasi</button>
+
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-4 shadow-md transition">Simpan & Antrekan Verifikasi</button>
               </form>
             </div>
           );
 
-          const TableTemplate = ({ data, showVerifyAction }) => (
+          const TableTemplate = ({ data, showVerifyAction, isDraggable, onDragStart, onDragOver, onDrop, onDragEnd, draggedId }) => (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse bg-white rounded-xl shadow-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
+                    {isDraggable && <th className="p-4 font-semibold w-10"></th>}
                     <th className="p-4 font-semibold">ID & Tgl Update</th><th className="p-4 font-semibold">Instansi & Triwulan</th><th className="p-4 font-semibold">Nominal & Rincian</th><th className="p-4 font-semibold">Status</th>
-                    {showVerifyAction && <th className="p-4 font-semibold text-right">Aksi</th>}
+                    <th className="p-4 font-semibold text-right min-w-[180px]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {data.length === 0 ? <tr><td colSpan="5" className="p-8 text-center text-gray-500">Tidak ada data.</td></tr> : data.map((spj) => (
-                    <tr key={spj.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  {data.length === 0 ? <tr><td colSpan={isDraggable ? 6 : 5} className="p-8 text-center text-gray-500">Tidak ada data.</td></tr> : data.map((spj) => (
+                    <tr 
+                      key={spj.id} 
+                      className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${isDraggable ? 'cursor-move' : ''} ${draggedId === spj.id ? 'opacity-50 bg-blue-50' : ''}`}
+                      draggable={isDraggable}
+                      onDragStart={isDraggable ? (e) => onDragStart(e, spj.id) : null}
+                      onDragOver={isDraggable ? onDragOver : null}
+                      onDrop={isDraggable ? (e) => onDrop(e, spj.id) : null}
+                      onDragEnd={isDraggable ? onDragEnd : null}
+                    >
+                      {isDraggable && <td className="p-4 text-gray-400"><IconGripVertical size={18} /></td>}
                       <td className="p-4 font-medium text-gray-800">{spj.id}<br/><span className="text-xs text-gray-500 font-normal flex items-center mt-1"><IconClock size={12} className="mr-1"/>{spj.tanggal}</span></td>
-                      <td className="p-4 font-medium text-gray-800">{spj.sekolah}<br/><span className="text-xs text-gray-500 font-normal flex items-center mt-1"><IconMapPin size={12} className="mr-1"/> Kec. {spj.kecamatan} • {spj.triwulan}</span></td>
-                      <td className="p-4 max-w-xs"><div className="font-bold">{formatRupiah(spj.nominal)}</div><div className="text-xs text-gray-500 truncate" title={spj.rincian}>{spj.rincian}</div></td>
+                      <td className="p-4 font-medium text-gray-800">{spj.sekolah}<br/><span className="text-xs text-gray-500 font-normal flex items-center mt-1"><IconMapPin size={12} className="mr-1"/> Kec. {spj.kecamatan} (PIC: {spj.pic}) • {spj.triwulan}</span></td>
+                      <td className="p-4 max-w-xs"><div className="font-bold text-blue-700">{formatRupiah(spj.nominal)}</div><div className="text-xs text-gray-500 truncate mt-1" title={spj.rincian}>{spj.rincian}</div></td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${spj.status === 'Siap Cair' ? 'bg-green-100 text-green-800' : spj.status === 'Revisi' ? 'bg-red-100 text-red-800' : spj.status === 'Menunggu Verifikasi' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>{spj.status}</span>
                         {spj.catatan && <div className="text-xs text-red-500 mt-1 max-w-[150px]">{spj.catatan}</div>}
                       </td>
-                      {showVerifyAction && <td className="p-4 text-right"><button onClick={() => openVerifyModal(spj)} className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg">Koreksi</button></td>}
+                      <td className="p-4 text-right">
+                        <div className="flex justify-end space-x-1.5 flex-wrap gap-y-1">
+                            {showVerifyAction && <button onClick={() => openVerifyModal(spj)} className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconClipboardCheck size={14} className="mr-1 hidden sm:block"/> Koreksi</button>}
+                            <button onClick={() => handleOpenEdit(spj)} className="bg-amber-50 text-amber-600 hover:bg-amber-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconEdit size={14} className="mr-1 hidden sm:block"/> Edit</button>
+                            <button onClick={() => handleDeleteSpj(spj.id)} className="bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconTrash size={14} className="mr-1 hidden sm:block"/> Hapus</button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -239,7 +399,7 @@
 
           return (
             <div className="min-h-screen bg-gray-100 flex font-sans">
-              <aside className="w-64 bg-white shadow-md flex-col hidden md:flex">
+              <aside className="w-64 bg-white shadow-md flex-col hidden md:flex z-10">
                 <div className="p-6 border-b"><h1 className="text-xl font-extrabold text-blue-700">Sistem SPJ<span className="text-gray-800">BOS</span></h1><p className="text-xs text-gray-500">Dinas Pendidikan</p></div>
                 <nav className="flex-1 p-4 space-y-1">
                   <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'dashboard' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconDashboard/> <span>Dashboard</span></button>
@@ -252,67 +412,113 @@
 
               <main className="flex-1 flex flex-col h-screen overflow-hidden">
                 <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center"><div className="font-bold text-gray-700">Panel Verifikator</div></header>
-                <div className="flex-1 overflow-auto p-4 md:p-8">
+                <div className="flex-1 overflow-auto p-4 md:p-8 relative z-0">
                   {activeTab === 'dashboard' && renderDashboard()}
                   {activeTab === 'penerimaan' && renderPenerimaan()}
-                  {(activeTab === 'verifikasi' || activeTab === 'siapCair' || activeTab === 'kendala') && (
+                  {(activeTab === 'verifikasi' || activeTab === 'siapCair' || activeTab === 'kendala') && (() => {
+                    const dataSpjFiltered = dataSpj.filter(spj => (activeTab === 'verifikasi' ? spj.status === 'Menunggu Verifikasi' : activeTab === 'siapCair' ? spj.status === 'Siap Cair' : spj.status === 'Revisi' || spj.status === 'Ditunda'));
+                    return (
                     <div>
                       <h2 className="text-xl font-bold mb-4">{activeTab === 'verifikasi' ? 'Antrian Verifikasi SPJ' : activeTab === 'siapCair' ? 'Daftar SPJ Siap Cair' : 'Daftar SPJ Revisi & Ditunda'}</h2>
-                      <TableTemplate data={dataSpj.filter(spj => (activeTab === 'verifikasi' ? spj.status === 'Menunggu Verifikasi' : activeTab === 'siapCair' ? spj.status === 'Siap Cair' : spj.status === 'Revisi' || spj.status === 'Ditunda'))} showVerifyAction={activeTab === 'verifikasi' || activeTab === 'kendala'} />
+                      <TableTemplate 
+                        data={dataSpjFiltered} showVerifyAction={activeTab === 'verifikasi' || activeTab === 'kendala'} 
+                        isDraggable={activeTab === 'siapCair'} onDragStart={handleDragStart} onDragOver={handleDragOver} onDrop={handleDrop} onDragEnd={handleDragEnd} draggedId={draggedId}
+                      />
                     </div>
-                  )}
+                  )})()}
                 </div>
               </main>
 
-              {}
+              {/* MODAL VERIFIKASI */}
               {isModalOpen && selectedSpj && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                  <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-xl flex flex-col max-h-[90vh]">
+                  <div className="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-xl flex flex-col max-h-[90vh]">
                     <div className="flex justify-between items-center"><h3 className="text-xl font-bold">Verifikasi Berkas</h3><button onClick={() => setIsModalOpen(false)}><IconXCircle/></button></div>
                     <div className="overflow-y-auto flex-1 space-y-4">
-                      <div className="bg-gray-50 p-4 rounded-lg text-sm grid grid-cols-2 gap-4">
+
+                      <div className="bg-gray-50 p-4 rounded-lg text-sm grid grid-cols-2 gap-4 border border-gray-200">
                         <div>
                           <p><b>Instansi:</b> {selectedSpj.sekolah} (Kec. {selectedSpj.kecamatan})</p>
+                          <p><b>PIC:</b> <span className="font-bold text-indigo-700">{selectedSpj.pic}</span></p>
                           <p><b>Tgl Update:</b> {selectedSpj.tanggal}</p>
-                          <p><b>Triwulan:</b> {selectedSpj.triwulan}</p>
                         </div>
                         <div>
-                          <p><b>Nominal:</b> <span className="text-blue-600 font-bold">{formatRupiah(selectedSpj.nominal)}</span></p>
-                          <p><b>Rincian:</b> {selectedSpj.rincian}</p>
+                          <p><b>Triwulan:</b> {selectedSpj.triwulan}</p>
+                          <p><b>Nominal:</b> <span className="text-blue-600 font-bold text-lg">{formatRupiah(selectedSpj.nominal)}</span></p>
+                          <p className="mt-1"><b>Rincian:</b> <span className="bg-white px-2 py-1 rounded border shadow-sm block mt-1">{selectedSpj.rincian}</span></p>
                         </div>
                       </div>
-
-                      <button onClick={handleAiReview} disabled={isAiReviewLoading} className="w-full flex items-center justify-center space-x-2 bg-indigo-50 text-indigo-700 py-2 rounded-lg text-sm font-semibold border border-indigo-200">
-                        {isAiReviewLoading ? <span>✨ Menganalisis...</span> : <><IconSparkles size={16} /> <span>AI Analisis Kewajaran</span></>}
-                      </button>
-
-                      {aiReviewResult && (
-                        <div className="bg-indigo-50 border border-indigo-100 p-3 rounded-lg flex items-start space-x-2 text-sm text-indigo-900">
-                          <IconBot size={20} className="shrink-0 text-indigo-500" /> <div><b>Opini AI:</b> {aiReviewResult}</div>
-                        </div>
-                      )}
                       
                       <div>
-                        <label className="block text-sm font-bold mb-2">Keputusan:</label>
+                        <label className="block text-sm font-bold mb-2">Keputusan Verifikator:</label>
                         <div className="flex space-x-2">
-                          <button onClick={() => setVerdict('Siap Cair')} className={`flex-1 py-2 border rounded ${verdict === 'Siap Cair' ? 'bg-green-100 border-green-500 text-green-700 font-bold' : ''}`}>Siap Cair</button>
-                          <button onClick={() => setVerdict('Revisi')} className={`flex-1 py-2 border rounded ${verdict === 'Revisi' ? 'bg-red-100 border-red-500 text-red-700 font-bold' : ''}`}>Revisi</button>
-                          <button onClick={() => setVerdict('Ditunda')} className={`flex-1 py-2 border rounded ${verdict === 'Ditunda' ? 'bg-orange-100 border-orange-500 text-orange-700 font-bold' : ''}`}>Ditunda</button>
+                          <button onClick={() => setVerdict('Siap Cair')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Siap Cair' ? 'bg-green-100 border-green-500 text-green-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Diterima (Siap Cair)</button>
+                          <button onClick={() => setVerdict('Revisi')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Revisi' ? 'bg-red-100 border-red-500 text-red-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Kembalikan (Revisi)</button>
+                          <button onClick={() => setVerdict('Ditunda')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Ditunda' ? 'bg-orange-100 border-orange-500 text-orange-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Tunda Proses</button>
                         </div>
                       </div>
                       
                       {(verdict === 'Revisi' || verdict === 'Ditunda') && (
                         <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows="2" className="w-full p-2 border rounded-lg text-sm" placeholder="Tulis catatan revisi/tunda..."></textarea>
-                          <div className="flex justify-end mt-2">
-                            <button onClick={handleAiRefineNotes} disabled={isAiRefineLoading || !notes} className="text-xs bg-purple-50 text-purple-600 px-3 py-1 rounded-full border border-purple-200 flex items-center space-x-1">
-                              {isAiRefineLoading ? <span>✨ Merangkai kata...</span> : <><IconSparkles size={12}/> <span>Perhalus Teks</span></>}
-                            </button>
-                          </div>
+                          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows="2" className="w-full p-2 border rounded-lg text-sm" placeholder="Tulis alasan revisi/tunda..."></textarea>
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-end space-x-2 pt-4 border-t"><button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded">Batal</button><button onClick={submitVerification} className="px-4 py-2 bg-blue-600 text-white rounded font-bold">Simpan Keputusan</button></div>
+                    <div className="flex justify-end space-x-2 pt-4 border-t"><button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded text-gray-600 font-medium">Batal</button><button onClick={submitVerification} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shadow-md">Simpan Perubahan</button></div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL EDIT DATA SPJ */}
+              {isEditModalOpen && editingSpj && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl flex flex-col max-h-[90vh] overflow-y-auto">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center"><IconEdit className="mr-2 text-amber-500" size={24}/> Edit Data SPJ</h3>
+                      <button onClick={() => setIsEditModalOpen(false)}><IconXCircle className="text-gray-400 hover:text-gray-600"/></button>
+                    </div>
+                    <form onSubmit={handleSaveEdit} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+                          <select required name="kecamatan" defaultValue={editingSpj.kecamatan} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                            {KECAMATAN_LIST.map(kec => <option key={kec} value={kec}>{kec}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
+                          <input required name="sekolah" type="text" defaultValue={editingSpj.sekolah} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 relative z-10">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Triwulan Pelaksanaan</label>
+                          <select required name="triwulan" defaultValue={editingSpj.triwulan} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                            <option value="Triwulan 1">Triwulan 1 (Jan-Mar)</option><option value="Triwulan 2">Triwulan 2 (Apr-Jun)</option><option value="Triwulan 3">Triwulan 3 (Jul-Sep)</option><option value="Triwulan 4">Triwulan 4 (Okt-Des)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                          <input required name="nominal" type="number" min="0" defaultValue={editingSpj.nominal} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500" />
+                        </div>
+                      </div>
+
+                      <div className="relative z-20">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Belanja Singkat</label>
+                        <CustomComboBox 
+                            name="rincian" 
+                            defaultValue={editingSpj.rincian} 
+                            options={RINCIAN_OPTIONS} 
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500" 
+                            required 
+                        />
+                      </div>
+                      
+                      <div className="flex justify-end space-x-2 pt-4 border-t relative z-10">
+                        <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-50">Batal</button>
+                        <button type="submit" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded font-bold transition">Simpan Perubahan</button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               )}
