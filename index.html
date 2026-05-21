@@ -219,41 +219,19 @@
             setAddForm(newForm);
           };
 
-          constconst [addForm, setAddForm] = useState({
-  kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1'
-});
-const [loading, setLoading] = useState(false); // Tambahkan ini
-  
-  // GANTI URL INI dengan URL Web App yang Anda dapatkan tadi
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpAcmaPSxRd6M_FK-4G5nJqcnF10K4CTuaBv0FEKnDWy_VIw6B_xNMgTI7c_Rt4L9E/exec";
-
-  try {
-    // 1. Simpan ke State Lokal (tampilan web)
-    const today = new Date().toISOString().split('T')[0];
-    const newSpj = {
-      id: `SPJ-00${dataSpj.length + 1}`, kecamatan: addForm.kecamatan, pic: KECAMATAN_PIC[addForm.kecamatan],
-      sekolah: addForm.sekolah, tanggal: today, triwulan: addForm.triwulan,
-      rincian: addForm.rincian, nominal: Number(addForm.nominal), status: 'Menunggu Verifikasi', catatan: ''
-    };
-    
-    // 2. Kirim ke Google Sheets
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSpj),
-    });
-
-    setDataSpj([newSpj, ...dataSpj]);
-    setAddForm({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1' });
-    alert('Data berhasil disimpan ke Spreadsheet!');
-    setActiveTab('verifikasi');
-  } catch (error) {
-    alert('Gagal simpan ke database. Cek koneksi!');
-  } finally {
-    setLoading(false);
-  }
-};
+          const handleAddNewSpj = (e) => {
+            e.preventDefault();
+            const today = new Date().toISOString().split('T')[0];
+            const newSpj = {
+              id: `SPJ-00${dataSpj.length + 1}`, kecamatan: addForm.kecamatan, pic: KECAMATAN_PIC[addForm.kecamatan],
+              sekolah: addForm.sekolah, tanggal: today, triwulan: addForm.triwulan,
+              rincian: addForm.rincian, nominal: Number(addForm.nominal), status: 'Menunggu Verifikasi', catatan: ''
+            };
+            setDataSpj([newSpj, ...dataSpj]);
+            setAddForm({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1' });
+            alert('SPJ Baru berhasil ditambahkan ke antrian!');
+            setActiveTab('verifikasi');
+          };
 
           const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setIsModalOpen(true); };
 
@@ -440,13 +418,10 @@ const [loading, setLoading] = useState(false); // Tambahkan ini
                   </div>
                 </div>
 
-               <button 
-  type="submit" 
-  disabled={loading}
-  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-4 shadow-md transition disabled:bg-gray-400"
->
-  {loading ? "Menyimpan..." : "Simpan & Antrekan Verifikasi"}
-</button>
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg mt-4 shadow-md transition">Simpan & Antrekan Verifikasi</button>
+              </form>
+            </div>
+          );
 
           // Tambahan Props `requiresPicLock` dan `currentPic`
           const TableTemplate = ({ data, showVerifyAction, isDraggable, onDragStart, onDragOver, onDrop, onDragEnd, draggedId, requiresPicLock, currentPic }) => (
@@ -671,3 +646,4 @@ const [loading, setLoading] = useState(false); // Tambahkan ini
     </script>
 </body>
 </html>
+
