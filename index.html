@@ -219,30 +219,81 @@
             setAddForm(newForm);
           };
 
-          const handleAddNewSpj = (e) => {
-            e.preventDefault();
-            const today = new Date().toISOString().split('T')[0];
-            const newSpj = {
-              id: `SPJ-00${dataSpj.length + 1}`, kecamatan: addForm.kecamatan, pic: KECAMATAN_PIC[addForm.kecamatan],
-              sekolah: addForm.sekolah, tanggal: today, triwulan: addForm.triwulan,
-              rincian: addForm.rincian, nominal: Number(addForm.nominal), status: 'Menunggu Verifikasi', catatan: ''
-            };
+          const handleAddNewSpj = async (e) => {
+    e.preventDefault();
+    
+    // 1. Data yang mau dikirim
+    const newSpj = {
+        id: `SPJ-00${dataSpj.length + 1}`,
+        kecamatan: addForm.kecamatan,
+        sekolah: addForm.sekolah,
+        pic: KECAMATAN_PIC[addForm.kecamatan],
+        tanggal: new Date().toISOString().split('T')[0],
+        triwulan: addForm.triwulan,
+        rincian: addForm.rincian,
+        nominal: Number(addForm.nominal),
+        status: 'Menunggu Verifikasi',
+        catatan: '-'
+    };
+
+    try {
+        // 2. Kirim data ke Google Sheets via SheetBest
+        const response = await fetch('https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newSpj),
+        });
+
+        if (response.ok) {
+            // 3. Kalau berhasil, update tampilan di layar
             setDataSpj([newSpj, ...dataSpj]);
             setAddForm({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1' });
-            alert('SPJ Baru berhasil ditambahkan ke antrian!');
+            alert('Data berhasil disimpan ke Google Sheets!');
             setActiveTab('verifikasi');
-          };
+        } else {
+            alert('Gagal menyimpan data.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menyambungkan ke Google Sheets.');
+    }
+};
 
           const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setIsModalOpen(true); };
 
-          const submitVerification = () => {
-            const today = new Date().toISOString().split('T')[0];
-            const updatedData = dataSpj.map(spj => {
-              if (spj.id === selectedSpj.id) return { ...spj, status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, tanggal: today };
-              return spj;
-            });
-            setDataSpj(updatedData); setIsModalOpen(false);
-          };
+          const submitVerification = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 1. Update state lokal
+    const updatedData = dataSpj.map(spj => {
+        if (spj.id === selectedSpj.id) {
+            return { ...spj, status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, tanggal: today };
+        }
+        return spj;
+    });
+    setDataSpj(updatedData);
+    setIsModalOpen(false);
+
+    // 2. Kirim update ke Google Sheets (Asumsi menggunakan API SheetBest)
+    // SheetBest memerlukan ID untuk mencari baris yang ingin di-update
+    try {
+        await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${selectedSpj.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                status: verdict,
+                catatan: verdict === 'Siap Cair' ? '' : notes,
+                tanggal: today
+            }),
+        });
+        alert('Status di Sheets berhasil diperbarui!');
+    } catch (error) {
+        console.error('Gagal update Sheets:', error);
+        alert('Status di aplikasi berubah, tapi gagal sinkron ke Sheets.');
+    }
+};
 
           const handleDeleteSpj = (id) => {
             if (window.confirm('Hapus data SPJ ini secara permanen?')) setDataSpj(dataSpj.filter(spj => spj.id !== id));
@@ -250,22 +301,51 @@
 
           const handleOpenEdit = (spj) => { setEditingSpj(spj); setIsEditModalOpen(true); };
 
-          const handleSaveEdit = (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const selectedKecamatan = formData.get('kecamatan');
-            const updatedData = dataSpj.map(spj => {
-              if (spj.id === editingSpj.id) {
-                return {
-                  ...spj, kecamatan: selectedKecamatan, pic: KECAMATAN_PIC[selectedKecamatan],
-                  sekolah: formData.get('sekolah'), triwulan: formData.get('triwulan'),
-                  nominal: Number(formData.get('nominal')), rincian: formData.get('rincian'),
-                };
-              }
-              return spj;
-            });
-            setDataSpj(updatedData); setIsEditModalOpen(false); setEditingSpj(null);
-          };
+         const handleSaveEdit = async (e) => {
+    e.preventDefault();
+
+    if (!editingSpj || !editingSpj.id) {
+        alert("Error: ID tidak ditemukan!");
+        return;
+    }
+
+    const formData = new FormData(e.target);
+    const updatedDataPayload = {
+        kecamatan: formData.get('kecamatan'),
+        sekolah: formData.get('sekolah'),
+        triwulan: formData.get('triwulan'),
+        nominal: Number(formData.get('nominal')),
+        rincian: formData.get('rincian'),
+        pic: KECAMATAN_PIC[formData.get('kecamatan')]
+    };
+
+    try {
+        const url = `https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${editingSpj.id}`;
+        console.log("Mengirim ke:", url);
+        
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedDataPayload),
+        });
+
+        if (response.ok) {
+            alert('Berhasil terkirim ke Sheets!');
+            
+            setDataSpj(prevData => prevData.map(spj => 
+                spj.id === editingSpj.id ? { ...spj, ...updatedDataPayload } : spj
+            ));
+            
+            setIsEditModalOpen(false);
+            setEditingSpj(null);
+        } else {
+            alert('Gagal mengirim ke Sheets.');
+        }
+    } catch (error) { // <--- Blok catch ini yang kemarin hilang/kurang
+        console.error('Error:', error);
+        alert('Terjadi kesalahan koneksi.');
+    } // <--- Jangan lupa tutup kurung kurawal penutup fungsi
+};
 
           const handleDragStart = (e, id) => { setDraggedId(id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); };
           const handleDragOver = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
@@ -646,4 +726,3 @@
     </script>
 </body>
 </html>
-
