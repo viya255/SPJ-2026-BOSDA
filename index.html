@@ -223,6 +223,8 @@
          const handleAddNewSpj = async (e) => {
     e.preventDefault();
     setIsLoading(true); // <--- Tambahkan ini untuk memulai loading
+    console.log("Tombol diklik, loading dimulai..."); // Tambahkan ini
+    setIsLoading(true);
     
     // 1. Data yang mau dikirim
     const newSpj = {
@@ -262,6 +264,7 @@
         alert('Terjadi kesalahan saat menyambungkan ke Google Sheets.');
     } finally {
         setIsLoading(false); // <--- Tambahkan ini agar loading berhenti apapun hasilnya
+        console.log("Loading selesai."); // Tambahkan ini
     }
 };
 
