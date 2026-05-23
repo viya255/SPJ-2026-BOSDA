@@ -325,9 +325,13 @@
 
          const handleSaveEdit = async (e) => {
     e.preventDefault();
+    
+    // --- TAMBAHKAN INI: Mulai loading ---
+    setIsLoading(true); 
 
     if (!editingSpj || !editingSpj.id) {
         alert("Error: ID tidak ditemukan!");
+        setIsLoading(false); // Matikan loading jika error di sini
         return;
     }
 
@@ -343,7 +347,6 @@
 
     try {
         const url = `https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${editingSpj.id}`;
-        console.log("Mengirim ke:", url);
         
         const response = await fetch(url, {
             method: 'PATCH',
@@ -363,10 +366,13 @@
         } else {
             alert('Gagal mengirim ke Sheets.');
         }
-    } catch (error) { // <--- Blok catch ini yang kemarin hilang/kurang
+    } catch (error) {
         console.error('Error:', error);
         alert('Terjadi kesalahan koneksi.');
-    } // <--- Jangan lupa tutup kurung kurawal penutup fungsi
+    } finally {
+        // --- TAMBAHKAN INI: Pasti berhenti loading apapun hasilnya ---
+        setIsLoading(false); 
+    }
 };
 
           const handleDragStart = (e, id) => { setDraggedId(id); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); };
