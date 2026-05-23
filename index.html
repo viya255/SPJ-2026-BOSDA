@@ -182,7 +182,9 @@
         function App() {
           const [activeTab, setActiveTab] = useState('dashboard');
           const [dataSpj, setDataSpj] = useState(initialData);
-          
+        
+            const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Untuk buka/tutup modal
+            const [editingSpj, setEditingSpj] = useState(null);           // Untuk menyimpan data yang mau diedit
           const [addForm, setAddForm] = useState({
             kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: 'Triwulan 1'
           });
@@ -259,6 +261,10 @@
         console.error('Error:', error);
         alert('Terjadi kesalahan saat menyambungkan ke Google Sheets.');
     }
+};
+        const handleOpenEdit = (spj) => { 
+    setEditingSpj(spj); 
+    setIsEditModalOpen(true); 
 };
 
           const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setIsModalOpen(true); };
@@ -644,6 +650,55 @@
                   )})()}
                 </div>
               </main>
+                {/* Modal Edit */}
+{isEditModalOpen && editingSpj && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-xl font-bold mb-6">Edit Data SPJ</h3>
+            
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Dropdown Kecamatan */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Kecamatan</label>
+                        <select 
+                            required 
+                            name="kecamatan" 
+                            value={editingSpj.kecamatan} 
+                            onChange={(e) => setEditingSpj({...editingSpj, kecamatan: e.target.value, sekolah: ''})} 
+                            className="w-full p-2 border rounded-lg"
+                        >
+                            {KECAMATAN_LIST.map(kec => <option key={kec} value={kec}>{kec}</option>)}
+                        </select>
+                    </div>
+
+                    {/* Dropdown Sekolah (Dinamis) */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Nama Sekolah</label>
+                        <select 
+                            required 
+                            name="sekolah" 
+                            value={editingSpj.sekolah} 
+                            onChange={(e) => setEditingSpj({...editingSpj, sekolah: e.target.value})}
+                            className="w-full p-2 border rounded-lg"
+                        >
+                            <option value="">-- Pilih Sekolah --</option>
+                            {SEKOLAH_DATA[editingSpj.kecamatan]?.map(sek => (
+                                <option key={sek} value={sek}>{sek}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Tombol Simpan */}
+                <div className="flex justify-end space-x-2 pt-4">
+                    <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 border rounded">Batal</button>
+                    <button type="submit" className="px-4 py-2 bg-amber-500 text-white rounded">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+)}
 
               {/* MODAL VERIFIKASI */}
               {isModalOpen && selectedSpj && (
