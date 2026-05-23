@@ -174,10 +174,7 @@
 
         const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
 
-        const initialData = [
-          { id: 'SPJ-001', kecamatan: 'Gresik', sekolah: 'UPT SDN 1 GRESIK', pic: 'Dimas', tanggal: '2026-05-01', triwulan: 'Triwulan 1', rincian: '5.1.02.01.01.0024 Belanja Alat Tulis Kantor', nominal: 1811880, status: 'Menunggu Verifikasi', catatan: '' },
-          { id: 'SPJ-002', kecamatan: 'Kebomas', sekolah: 'UPT SDN 16 GRESIK', pic: 'Viya', tanggal: '2026-05-02', triwulan: 'Triwulan 2', rincian: '5.1.02.01.01.0029 Belanja Bahan Komputer', nominal: 2500000, status: 'Siap Cair', catatan: '' },
-        ];
+        const initialData = [];
 
         function App() {
           const [activeTab, setActiveTab] = useState('dashboard');
