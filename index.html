@@ -295,9 +295,28 @@
     }
 };
 
-          const handleDeleteSpj = (id) => {
-            if (window.confirm('Hapus data SPJ ini secara permanen?')) setDataSpj(dataSpj.filter(spj => spj.id !== id));
-          };
+          const handleDeleteSpj = async (id) => {
+    // Beri konfirmasi agar tidak terhapus tidak sengaja
+    if (!window.confirm('Yakin ingin menghapus data ini dari Sheets?')) return;
+
+    try {
+        const response = await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            alert('Data berhasil dihapus!');
+            
+            // Update state agar baris langsung hilang dari layar tanpa perlu reload
+            setDataSpj(prevData => prevData.filter(spj => spj.id !== id));
+        } else {
+            alert('Gagal menghapus data di Sheets.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan koneksi saat menghapus.');
+    }
+};
 
           const handleOpenEdit = (spj) => { setEditingSpj(spj); setIsEditModalOpen(true); };
 
