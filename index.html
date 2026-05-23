@@ -199,6 +199,7 @@
           
           // State baru untuk menyimpan PIC yang sedang login/memfilter
           const [aksesPic, setAksesPic] = useState('Semua');
+          const [isLoading, setIsLoading] = useState(false);
 
           const stats = {
             total: dataSpj.length,
