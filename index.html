@@ -10,6 +10,26 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script> <script>
+    <script>
+     // Konfigurasi sudah benar
+      const firebaseConfig = {
+        apiKey: "AIzaSyCz8OHlSJTpiNbh-Czmhe0drYdCThEN-Rs",
+        authDomain: "spj-bosda-2026.firebaseapp.com",
+        projectId: "spj-bosda-2026",
+        storageBucket: "spj-bosda-2026.appspot.com",
+        messagingSenderId: "772724951487",
+        appId: "1:772724951487:web:80131eebb612647d08f90a",
+        measurementId: "G-HKE2LVLHYC"
+      };
+
+      // Inisialisasi Firebase (Gunakan cara ini untuk versi compat)
+      firebase.initializeApp(firebaseConfig);
+  
+      // Inisialisasi service yang kamu butuhkan
+      const db = firebase.firestore();
+      const analytics = firebase.analytics();
+    </script>
 </head>
 <body class="bg-gray-100">
     <div id="root"></div>
