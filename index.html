@@ -80,6 +80,7 @@ function getPaguInfo(sekolah, rincian, triwulan) {
         const IconSearch = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
         const IconEye = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
         const IconChevronUp = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>;
+        const IconCalendar = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>;
  
         const KECAMATAN_PIC = {
           'Gresik': 'Dimas', 'Cerme': 'Dimas', 'Duduksampeyan': 'Dimas', 'Benjeng': 'Dimas', 'Menganti': 'Dimas', 'Tambak': 'Dimas',
@@ -120,6 +121,20 @@ function getPaguInfo(sekolah, rincian, triwulan) {
           "5.1.02.01.01.0034 Belanja Perlengkapan Pendukung Olahraga","5.1.02.01.01.0035 Belanja Suvenir/Cendera Mata",
           "5.1.02.01.01.0037 Belanja Obat-Obatan","5.1.02.01.01.0052 Belanja Mamin Rapat"
         ];
+
+        // === HELPER: NAMA BULAN ===
+        const NAMA_BULAN = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+        const getNamaBulan = (dateStr) => {
+          if (!dateStr) return '?';
+          const parts = dateStr.split('-');
+          const bulan = parseInt(parts[1]) - 1;
+          return NAMA_BULAN[bulan] || '?';
+        };
+        const getTanggalDisplay = (dateStr) => {
+          if (!dateStr) return '';
+          const parts = dateStr.split('-');
+          return `${parts[2]}/${parts[1]}`;
+        };
  
         // --- CUSTOM COMBOBOX ---
         const CustomComboBox = ({ name, value, defaultValue, onChange, options, placeholder, required, className }) => {
@@ -248,365 +263,11 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 </div>
             );
         };
- 
+
         // ============================================================
         // KOMPONEN BARU: RAK BOS 2026
         // ============================================================
-        const RakBosPage = ({ dataSpj }) => {
-          const [filterKec, setFilterKec] = useState('Semua');
-          const [filterTw, setFilterTw] = useState('Semua');
-          const [search, setSearch] = useState('');
-          const [selectedSchool, setSelectedSchool] = useState(null);
-          const [isDetailOpen, setIsDetailOpen] = useState(false);
-          const [rakExternal, setRakExternal] = useState([]);
-          const [isLoadingExt, setIsLoadingExt] = useState(false);
-          const [sortField, setSortField] = useState('num');
-          const [sortDir, setSortDir] = useState('asc');
- 
-          useEffect(() => {
-            setIsLoadingExt(true);
-            fetch('https://api.sheetbest.com/sheets/cfa7def0-feb9-4828-bb0f-e237c95d4dc4')
-              .then(r => r.json())
-              .then(data => { setRakExternal(Array.isArray(data) ? data : []); })
-              .catch(() => setRakExternal([]))
-              .finally(() => setIsLoadingExt(false));
-          }, []);
- 
-          const realisasiMap = useMemo(() => {
-            const map = {};
-            dataSpj.forEach(s => {
-              if (s.status === 'Siap Cair' || s.status === 'Menunggu Verifikasi') {
-                const num = s.sekolah?.match(/\b(\d+)\b/)?.[1];
-                if (num) {
-                  if (!map[num]) map[num] = {};
-                  const kode = s.rincian?.split(' ')[0];
-                  if (kode) {
-                    if (!map[num][kode]) map[num][kode] = { tw1: 0, tw2: 0, tw3: 0, tw4: 0, total: 0 };
-                    const tw = s.triwulan?.replace('Triwulan ', '');
-                    if (tw && ['1','2','3','4'].includes(tw)) map[num][kode][`tw${tw}`] += Number(s.nominal) || 0;
-                    map[num][kode].total += Number(s.nominal) || 0;
-                  }
-                }
-              }
-            });
-            return map;
-          }, [dataSpj]);
- 
-          const schoolSummaries = useMemo(() => {
-            return ALL_SCHOOLS.map(s => {
-              const numStr = String(s.num);
-              const rakSekolah = RAK_DATA[numStr] || {};
-              let paguTotal = 0, sudahDiajukan = 0;
-              Object.entries(rakSekolah).forEach(([kode, twData]) => {
-                paguTotal += twData.t || 0;
-                const real = realisasiMap[numStr]?.[kode];
-                if (real) sudahDiajukan += real.total;
-              });
-              const sisaPagu = paguTotal - sudahDiajukan;
-              const persenTerpakai = paguTotal > 0 ? (sudahDiajukan / paguTotal) * 100 : 0;
-              return { ...s, paguTotal, sudahDiajukan, sisaPagu, persenTerpakai, numStr, hasData: Object.keys(rakSekolah).length > 0 };
-            }).filter(s => s.hasData);
-          }, [realisasiMap]);
- 
-          const filtered = useMemo(() => {
-            let list = schoolSummaries;
-            if (filterKec !== 'Semua') list = list.filter(s => s.kecamatan === filterKec);
-            if (search) list = list.filter(s => s.nama.toLowerCase().includes(search.toLowerCase()) || s.kecamatan.toLowerCase().includes(search.toLowerCase()));
-            list = [...list].sort((a, b) => {
-              let va = a[sortField], vb = b[sortField];
-              if (typeof va === 'string') va = va.toLowerCase(), vb = vb.toLowerCase();
-              if (va < vb) return sortDir === 'asc' ? -1 : 1;
-              if (va > vb) return sortDir === 'asc' ? 1 : -1;
-              return 0;
-            });
-            return list;
-          }, [schoolSummaries, filterKec, search, sortField, sortDir]);
- 
-          const totalPagu = filtered.reduce((s, x) => s + x.paguTotal, 0);
-          const totalTerpakai = filtered.reduce((s, x) => s + x.sudahDiajukan, 0);
-          const totalSisa = filtered.reduce((s, x) => s + x.sisaPagu, 0);
- 
-          const handleSort = (field) => {
-            if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-            else { setSortField(field); setSortDir('asc'); }
-          };
- 
-          const SortIcon = ({ field }) => {
-            if (sortField !== field) return <span className="text-gray-300 ml-1">↕</span>;
-            return <span className="text-blue-600 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>;
-          };
- 
-          const openDetail = (school) => { setSelectedSchool(school); setIsDetailOpen(true); };
- 
-          const SchoolDetailModal = ({ school, onClose }) => {
-            if (!school) return null;
-            const rakSekolah = RAK_DATA[school.numStr] || {};
-            const realSekolah = realisasiMap[school.numStr] || {};
 
-            const twCols = filterTw === 'Semua'
-              ? [{ key: '1', label: 'TW 1' }, { key: '2', label: 'TW 2' }, { key: '3', label: 'TW 3' }, { key: '4', label: 'TW 4' }]
-              : [{ key: filterTw.replace('Triwulan ', ''), label: filterTw }];
- 
-            return (
-              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[92vh]">
-                  <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 rounded-t-2xl flex justify-between items-start">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{school.nama}</h3>
-                      <p className="text-emerald-100 text-sm mt-0.5">Kec. {school.kecamatan} • PIC: {KECAMATAN_PIC[school.kecamatan]}</p>
-                    </div>
-                    <button onClick={onClose} className="text-white hover:text-emerald-200 mt-0.5">
-                      <IconXCircle size={24}/>
-                    </button>
-                  </div>
- 
-                  <div className="grid grid-cols-3 gap-4 px-6 py-4 bg-gray-50 border-b">
-                    <div className="text-center">
-                      <p className="text-xs text-gray-500 mb-1">Total Pagu Setahun</p>
-                      <p className="text-lg font-bold text-gray-800">{formatRupiah(school.paguTotal)}</p>
-                    </div>
-                    <div className="text-center border-x border-gray-200">
-                      <p className="text-xs text-gray-500 mb-1">Sudah Diajukan</p>
-                      <p className="text-lg font-bold text-orange-600">{formatRupiah(school.sudahDiajukan)}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-gray-500 mb-1">Sisa Pagu</p>
-                      <p className={`text-lg font-bold ${school.sisaPagu >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatRupiah(school.sisaPagu)}</p>
-                    </div>
-                  </div>
- 
-                  <div className="overflow-auto flex-1 px-6 py-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <select value={filterTw} onChange={e => setFilterTw(e.target.value)}
-                        className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-400">
-                        <option value="Semua">Semua Triwulan</option>
-                        <option value="Triwulan 1">Triwulan 1</option>
-                        <option value="Triwulan 2">Triwulan 2</option>
-                        <option value="Triwulan 3">Triwulan 3</option>
-                        <option value="Triwulan 4">Triwulan 4</option>
-                      </select>
-                      <span className="text-xs text-gray-400">{Object.keys(rakSekolah).length} rekening belanja</span>
-                    </div>
-                    <table className="w-full text-sm border-collapse">
-                      <thead>
-                        <tr className="bg-emerald-50 text-emerald-800">
-                          <th className="text-left p-3 rounded-tl-lg font-semibold border border-emerald-100">Rekening Belanja</th>
-                          <th className="text-right p-3 font-semibold border border-emerald-100">Pagu Total</th>
-                          {twCols.map(tw => (
-                            <th key={tw.key} className="text-right p-3 font-semibold border border-emerald-100">Pagu {tw.label}</th>
-                          ))}
-                          {twCols.map(tw => (
-                            <th key={`r${tw.key}`} className="text-right p-3 font-semibold border border-emerald-100 bg-orange-50 text-orange-700">Diajukan {tw.label}</th>
-                          ))}
-                          <th className="text-right p-3 rounded-tr-lg font-semibold border border-emerald-100 bg-green-50 text-green-700">Sisa Pagu</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(rakSekolah).map(([kode, twData], idx) => {
-                          const namaRek = NAMA_REKENING[kode] || kode;
-                          const real = realSekolah[kode] || {};
-                          const totalReal = real.total || 0;
-                          const sisa = (twData.t || 0) - totalReal;
-                          return (
-                            <tr key={kode} className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-emerald-50 transition`}>
-                              <td className="p-3 border border-gray-100">
-                                <div className="font-medium text-gray-800 text-xs">{kode}</div>
-                                <div className="text-gray-600 text-xs mt-0.5">{namaRek}</div>
-                              </td>
-                              <td className="p-3 text-right font-semibold text-gray-700 border border-gray-100">{formatRupiah(twData.t || 0)}</td>
-                              {twCols.map(tw => (
-                                <td key={tw.key} className="p-3 text-right border border-gray-100">
-                                  {twData[tw.key] > 0
-                                    ? <span className="text-blue-700 font-medium">{formatRupiah(twData[tw.key])}</span>
-                                    : <span className="text-gray-300 text-xs">—</span>}
-                                </td>
-                              ))}
-                              {twCols.map(tw => {
-                                const r = real[`tw${tw.key}`] || 0;
-                                return (
-                                  <td key={`r${tw.key}`} className="p-3 text-right border border-gray-100 bg-orange-50">
-                                    {r > 0
-                                      ? <span className="text-orange-600 font-medium">{formatRupiah(r)}</span>
-                                      : <span className="text-gray-300 text-xs">—</span>}
-                                  </td>
-                                );
-                              })}
-                              <td className={`p-3 text-right font-bold border border-gray-100 ${sisa >= 0 ? 'text-green-700 bg-green-50' : 'text-red-600 bg-red-50'}`}>
-                                {formatRupiah(sisa)}
-                                {sisa < 0 && <div className="text-xs font-normal text-red-500">Melebihi!</div>}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                      <tfoot>
-                        <tr className="bg-emerald-100 font-bold">
-                          <td className="p-3 text-emerald-900 border border-emerald-200">TOTAL</td>
-                          <td className="p-3 text-right text-emerald-900 border border-emerald-200">{formatRupiah(school.paguTotal)}</td>
-                          {twCols.map(tw => {
-                            const tot = Object.values(rakSekolah).reduce((s, d) => s + (d[tw.key] || 0), 0);
-                            return <td key={tw.key} className="p-3 text-right text-blue-800 border border-emerald-200">{formatRupiah(tot)}</td>;
-                          })}
-                          {twCols.map(tw => {
-                            const tot = Object.values(realSekolah).reduce((s, d) => s + (d[`tw${tw.key}`] || 0), 0);
-                            return <td key={`r${tw.key}`} className="p-3 text-right text-orange-700 border border-emerald-200 bg-orange-50">{formatRupiah(tot)}</td>;
-                          })}
-                          <td className={`p-3 text-right border border-emerald-200 ${school.sisaPagu >= 0 ? 'text-green-800 bg-green-100' : 'text-red-700 bg-red-100'}`}>
-                            {formatRupiah(school.sisaPagu)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
- 
-                  <div className="px-6 py-3 border-t flex justify-end">
-                    <button onClick={onClose} className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition">Tutup</button>
-                  </div>
-                </div>
-              </div>
-            );
-          };
- 
-          return (
-            <div className="space-y-5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <IconTable size={24} className="text-emerald-600"/> RAK BOS 2026
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-0.5">Rencana Anggaran Kegiatan — {filtered.length} sekolah ditampilkan</p>
-                </div>
-                {isLoadingExt && (
-                  <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                    Memuat data eksternal...
-                  </div>
-                )}
-              </div>
- 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Pagu (ditampilkan)</p>
-                  <p className="text-2xl font-bold text-gray-800">{formatRupiah(totalPagu)}</p>
-                  <p className="text-xs text-gray-400 mt-1">{filtered.length} sekolah</p>
-                </div>
-                <div className="bg-orange-50 border border-orange-200 rounded-xl p-5 shadow-sm">
-                  <p className="text-xs text-orange-600 uppercase tracking-wide mb-1">Sudah Diajukan</p>
-                  <p className="text-2xl font-bold text-orange-700">{formatRupiah(totalTerpakai)}</p>
-                  <p className="text-xs text-orange-400 mt-1">{totalPagu > 0 ? ((totalTerpakai/totalPagu)*100).toFixed(1) : 0}% dari pagu</p>
-                </div>
-                <div className="bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm">
-                  <p className="text-xs text-green-600 uppercase tracking-wide mb-1">Sisa Pagu</p>
-                  <p className="text-2xl font-bold text-green-700">{formatRupiah(totalSisa)}</p>
-                  <p className="text-xs text-green-400 mt-1">{totalPagu > 0 ? ((totalSisa/totalPagu)*100).toFixed(1) : 0}% tersisa</p>
-                </div>
-              </div>
- 
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-center">
-                <div className="relative flex-1 min-w-[180px]">
-                  <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                  <input value={search} onChange={e => setSearch(e.target.value)}
-                    placeholder="Cari nama sekolah..."
-                    className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:border-transparent"/>
-                </div>
-                <select value={filterKec} onChange={e => setFilterKec(e.target.value)}
-                  className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-400">
-                  <option value="Semua">Semua Kecamatan</option>
-                  {KECAMATAN_LIST.map(k => <option key={k} value={k}>{k}</option>)}
-                </select>
-                <select value={filterTw} onChange={e => setFilterTw(e.target.value)}
-                  className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-400">
-                  <option value="Semua">Semua Triwulan</option>
-                  <option value="Triwulan 1">Triwulan 1</option>
-                  <option value="Triwulan 2">Triwulan 2</option>
-                  <option value="Triwulan 3">Triwulan 3</option>
-                  <option value="Triwulan 4">Triwulan 4</option>
-                </select>
-                {(filterKec !== 'Semua' || search || filterTw !== 'Semua') && (
-                  <button onClick={() => { setFilterKec('Semua'); setSearch(''); setFilterTw('Semua'); }}
-                    className="text-sm text-red-500 hover:text-red-700 px-3 py-2 border border-red-200 rounded-lg hover:bg-red-50 transition">
-                    Reset Filter
-                  </button>
-                )}
-              </div>
- 
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-emerald-600 text-white">
-                        <th className="px-4 py-3 text-left font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('num')}>
-                          No Urut <SortIcon field="num"/>
-                        </th>
-                        <th className="px-4 py-3 text-left font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('nama')}>
-                          Sekolah <SortIcon field="nama"/>
-                        </th>
-                        <th className="px-4 py-3 text-left font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('kecamatan')}>
-                          Kecamatan <SortIcon field="kecamatan"/>
-                        </th>
-                        <th className="px-4 py-3 text-right font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('paguTotal')}>
-                          Pagu Total <SortIcon field="paguTotal"/>
-                        </th>
-                        <th className="px-4 py-3 text-right font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('sudahDiajukan')}>
-                          Diajukan <SortIcon field="sudahDiajukan"/>
-                        </th>
-                        <th className="px-4 py-3 text-right font-semibold cursor-pointer hover:bg-emerald-700 transition" onClick={() => handleSort('sisaPagu')}>
-                          Sisa Pagu <SortIcon field="sisaPagu"/>
-                        </th>
-                        <th className="px-4 py-3 text-center font-semibold">Serapan</th>
-                        <th className="px-4 py-3 text-center font-semibold">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.length === 0 ? (
-                        <tr><td colSpan="8" className="p-10 text-center text-gray-400">Tidak ada data untuk filter ini.</td></tr>
-                      ) : filtered.map((s, idx) => {
-                        const persen = s.persenTerpakai;
-                        const barColor = persen >= 90 ? 'bg-red-500' : persen >= 70 ? 'bg-orange-400' : persen >= 40 ? 'bg-yellow-400' : 'bg-emerald-500';
-                        return (
-                          <tr key={s.nama} className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-emerald-50 transition`}>
-                            <td className="px-4 py-3 font-bold text-gray-500 text-center w-12">{s.num}</td>
-                            <td className="px-4 py-3">
-                              <div className="font-semibold text-gray-800">{s.nama.replace('UPT SDN ', 'SDN ').replace(' GRESIK', '')}</div>
-                              <div className="text-xs text-gray-400">UPT SDN {s.num} Gresik</div>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">{s.kecamatan}</span>
-                            </td>
-                            <td className="px-4 py-3 text-right font-semibold text-gray-800">{formatRupiah(s.paguTotal)}</td>
-                            <td className="px-4 py-3 text-right">
-                              {s.sudahDiajukan > 0
-                                ? <span className="text-orange-600 font-semibold">{formatRupiah(s.sudahDiajukan)}</span>
-                                : <span className="text-gray-300 text-xs">—</span>}
-                            </td>
-                            <td className={`px-4 py-3 text-right font-bold ${s.sisaPagu >= 0 ? 'text-green-700' : 'text-red-600'}`}>
-                              {formatRupiah(s.sisaPagu)}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                <div className="flex-1 bg-gray-200 rounded-full h-2 min-w-[60px]">
-                                  <div className={`h-2 rounded-full transition-all ${barColor}`} style={{ width: `${Math.min(100, persen)}%` }}></div>
-                                </div>
-                                <span className="text-xs text-gray-500 w-10 text-right">{persen.toFixed(0)}%</span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <button onClick={() => openDetail(s)}
-                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1">
-                                <IconEye size={13}/> Detail
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          );
-        };
- 
         // Wrapper RakBosPage dengan portal modal
         const RakBosPageWrapper = ({ dataSpj }) => {
           const [filterTw, setFilterTw] = useState('Semua');
@@ -642,6 +303,32 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                     map[num][kode].total += Number(s.nominal) || 0;
                   }
                 }
+              }
+            });
+            return map;
+          }, [dataSpj]);
+
+          // ============================================================
+          // BARU: Map detail SPJ per sekolah+rekening (untuk info per bulan)
+          // ============================================================
+          const spjDetailMap = useMemo(() => {
+            // map[numSekolah][kodeRekening] = [ {nominal, tanggal, status, triwulan, id}, ... ]
+            const map = {};
+            dataSpj.forEach(s => {
+              if (s.status === 'Siap Cair' || s.status === 'Menunggu Verifikasi') {
+                const num = s.sekolah?.match(/\b(\d+)\b/)?.[1];
+                if (!num) return;
+                const kode = s.rincian?.split(' ')[0];
+                if (!kode) return;
+                if (!map[num]) map[num] = {};
+                if (!map[num][kode]) map[num][kode] = [];
+                map[num][kode].push({
+                  id: s.id,
+                  nominal: Number(s.nominal) || 0,
+                  tanggal: s.tanggal || '',
+                  status: s.status,
+                  triwulan: s.triwulan || '',
+                });
               }
             });
             return map;
@@ -689,19 +376,79 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             if (sortField !== field) return <span className="text-emerald-200 ml-1">↕</span>;
             return <span className="text-yellow-300 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>;
           };
+
+          // ============================================================
+          // KOMPONEN: Realisasi per Bulan (menggantikan kolom Diajukan TW)
+          // ============================================================
+          const RealisasiPerBulan = ({ items }) => {
+            if (!items || items.length === 0) {
+              return <span className="text-gray-300 text-xs italic">Belum ada</span>;
+            }
+            // Sort by tanggal
+            const sorted = [...items].sort((a, b) => (a.tanggal || '').localeCompare(b.tanggal || ''));
+            return (
+              <div className="flex flex-col gap-1.5">
+                {sorted.map((item, idx) => {
+                  const bulan = getNamaBulan(item.tanggal);
+                  const tgl = getTanggalDisplay(item.tanggal);
+                  const isCair = item.status === 'Siap Cair';
+                  return (
+                    <div key={idx} className="flex items-center gap-1.5 flex-wrap">
+                      {/* Badge Bulan */}
+                      <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap
+                        ${isCair ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200'}`}>
+                        <IconCalendar size={10}/>
+                        {bulan}
+                      </span>
+                      {/* Nominal */}
+                      <span className={`text-xs font-semibold whitespace-nowrap ${isCair ? 'text-emerald-700' : 'text-orange-600'}`}>
+                        {formatRupiahShort(item.nominal)}
+                      </span>
+                      {/* Tanggal */}
+                      {tgl && (
+                        <span className="text-xs text-gray-400 whitespace-nowrap">
+                          • {tgl}
+                        </span>
+                      )}
+                      {/* Status badge kecil */}
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium whitespace-nowrap
+                        ${isCair ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {isCair ? '✓ Cair' : '⏳ Proses'}
+                      </span>
+                    </div>
+                  );
+                })}
+                {/* Total jika lebih dari 1 item */}
+                {sorted.length > 1 && (
+                  <div className="border-t border-dashed border-gray-200 pt-1 mt-0.5">
+                    <span className="text-xs font-bold text-gray-600">
+                      Total: {formatRupiahShort(sorted.reduce((s, i) => s + i.nominal, 0))}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          };
  
           // Detail Modal
           const SchoolDetailModal = () => {
             if (!selectedSchool || !isDetailOpen) return null;
             const rakSekolah = RAK_DATA[selectedSchool.numStr] || {};
             const realSekolah = realisasiMap[selectedSchool.numStr] || {};
+            const spjSekolah = spjDetailMap[selectedSchool.numStr] || {};
+
+            // Filter SPJ per rekening berdasarkan filterTw jika dipilih
+            const getSpjItems = (kode) => {
+              const items = spjSekolah[kode] || [];
+              if (filterTw === 'Semua') return items;
+              return items.filter(i => i.triwulan === filterTw);
+            };
+
             const twCols = filterTw === 'Semua'
               ? [{ key: '1', label: 'TW 1' }, { key: '2', label: 'TW 2' }, { key: '3', label: 'TW 3' }, { key: '4', label: 'TW 4' }]
               : [{ key: filterTw.replace('Triwulan ', ''), label: filterTw }];
 
-            // ── TAMBAHAN: state toggle tabel ──
             const [isTableVisible, setIsTableVisible] = useState(true);
-            // ─────────────────────────────────
  
             return (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -732,7 +479,7 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                   </div>
  
                   <div className="overflow-auto flex-1 px-6 py-4">
-                    <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center gap-3 mb-3 flex-wrap">
                       <select value={filterTw} onChange={e => setFilterTw(e.target.value)}
                         className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-emerald-400">
                         <option value="Semua">Semua Triwulan</option>
@@ -743,31 +490,44 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                       </select>
                       <span className="text-xs text-gray-400">{Object.keys(rakSekolah).length} rekening belanja</span>
 
-                      {/* ── TAMBAHAN: Tombol Toggle Tabel ── */}
                       <button
                         onClick={() => setIsTableVisible(v => !v)}
                         className="ml-auto flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
                         {isTableVisible ? <IconChevronUp size={14}/> : <IconChevronDown size={14}/>}
                         {isTableVisible ? 'Sembunyikan Tabel' : 'Tampilkan Tabel'}
                       </button>
-                      {/* ─────────────────────────────────── */}
+
+                      {/* Legenda */}
+                      <div className="flex items-center gap-3 text-xs text-gray-500 ml-2">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> Siap Cair
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span> Menunggu
+                        </span>
+                      </div>
                     </div>
 
-                    {/* ── TAMBAHAN: Wrap tabel dengan kondisi isTableVisible ── */}
                     {isTableVisible && (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm border-collapse min-w-[700px]">
                         <thead>
                           <tr className="bg-emerald-50 text-emerald-800">
-                            <th className="text-left p-3 font-semibold border border-emerald-100">Rekening Belanja</th>
-                            <th className="text-right p-3 font-semibold border border-emerald-100">Pagu Total</th>
+                            <th className="text-left p-3 font-semibold border border-emerald-100 w-48">Rekening Belanja</th>
+                            <th className="text-right p-3 font-semibold border border-emerald-100 whitespace-nowrap">Pagu Total</th>
                             {twCols.map(tw => (
                               <th key={tw.key} className="text-right p-3 font-semibold border border-emerald-100 whitespace-nowrap">Pagu {tw.label}</th>
                             ))}
-                            {twCols.map(tw => (
-                              <th key={`r${tw.key}`} className="text-right p-3 font-semibold border border-emerald-100 bg-orange-50 text-orange-700 whitespace-nowrap">Diajukan {tw.label}</th>
-                            ))}
-                            <th className="text-right p-3 font-semibold border border-emerald-100 bg-green-50 text-green-700">Sisa Pagu</th>
+                            {/* ===== KOLOM BARU: Realisasi SPJ Per Bulan ===== */}
+                            <th className="text-left p-3 font-semibold border border-emerald-100 bg-orange-50 text-orange-700 min-w-[180px]">
+                              <div className="flex items-center gap-1.5">
+                                <IconCalendar size={13}/>
+                                Realisasi SPJ
+                                <span className="text-[10px] font-normal bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded-full">Per Bulan</span>
+                              </div>
+                            </th>
+                            {/* ============================================== */}
+                            <th className="text-right p-3 font-semibold border border-emerald-100 bg-green-50 text-green-700 whitespace-nowrap">Sisa Pagu</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -776,31 +536,27 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                             const real = realSekolah[kode] || {};
                             const totalReal = real.total || 0;
                             const sisa = (twData.t || 0) - totalReal;
+                            const spjItems = getSpjItems(kode);
                             return (
                               <tr key={kode} className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-emerald-50 transition`}>
                                 <td className="p-3 border border-gray-100">
                                   <div className="font-mono text-xs text-blue-700 font-medium">{kode}</div>
                                   <div className="text-gray-700 text-xs mt-0.5">{namaRek}</div>
                                 </td>
-                                <td className="p-3 text-right font-semibold text-gray-700 border border-gray-100">{formatRupiah(twData.t || 0)}</td>
+                                <td className="p-3 text-right font-semibold text-gray-700 border border-gray-100 whitespace-nowrap">{formatRupiah(twData.t || 0)}</td>
                                 {twCols.map(tw => (
-                                  <td key={tw.key} className="p-3 text-right border border-gray-100">
+                                  <td key={tw.key} className="p-3 text-right border border-gray-100 whitespace-nowrap">
                                     {(twData[tw.key] || 0) > 0
                                       ? <span className="text-blue-700 font-medium">{formatRupiah(twData[tw.key])}</span>
                                       : <span className="text-gray-300 text-xs">—</span>}
                                   </td>
                                 ))}
-                                {twCols.map(tw => {
-                                  const r = real[`tw${tw.key}`] || 0;
-                                  return (
-                                    <td key={`r${tw.key}`} className="p-3 text-right border border-gray-100 bg-orange-50">
-                                      {r > 0
-                                        ? <span className="text-orange-600 font-semibold">{formatRupiah(r)}</span>
-                                        : <span className="text-gray-300 text-xs">—</span>}
-                                    </td>
-                                  );
-                                })}
-                                <td className={`p-3 text-right font-bold border border-gray-100 ${sisa >= 0 ? 'text-green-700 bg-green-50' : 'text-red-600 bg-red-50'}`}>
+                                {/* ===== SEL REALISASI PER BULAN ===== */}
+                                <td className="p-3 border border-gray-100 bg-orange-50">
+                                  <RealisasiPerBulan items={spjItems} />
+                                </td>
+                                {/* =================================== */}
+                                <td className={`p-3 text-right font-bold border border-gray-100 whitespace-nowrap ${sisa >= 0 ? 'text-green-700 bg-green-50' : 'text-red-600 bg-red-50'}`}>
                                   {formatRupiah(sisa)}
                                   {sisa < 0 && <div className="text-xs font-normal text-red-400">Melebihi!</div>}
                                 </td>
@@ -811,16 +567,24 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                         <tfoot>
                           <tr className="bg-emerald-100 font-bold border-t-2 border-emerald-300">
                             <td className="p-3 text-emerald-900 border border-emerald-200">TOTAL SEKOLAH</td>
-                            <td className="p-3 text-right text-emerald-900 border border-emerald-200">{formatRupiah(selectedSchool.paguTotal)}</td>
+                            <td className="p-3 text-right text-emerald-900 border border-emerald-200 whitespace-nowrap">{formatRupiah(selectedSchool.paguTotal)}</td>
                             {twCols.map(tw => {
                               const tot = Object.values(rakSekolah).reduce((s, d) => s + (d[tw.key] || 0), 0);
-                              return <td key={tw.key} className="p-3 text-right text-blue-800 border border-emerald-200 font-bold">{formatRupiah(tot)}</td>;
+                              return <td key={tw.key} className="p-3 text-right text-blue-800 border border-emerald-200 font-bold whitespace-nowrap">{formatRupiah(tot)}</td>;
                             })}
-                            {twCols.map(tw => {
-                              const tot = Object.values(realSekolah).reduce((s, d) => s + (d[`tw${tw.key}`] || 0), 0);
-                              return <td key={`r${tw.key}`} className="p-3 text-right text-orange-700 border border-emerald-200 bg-orange-100 font-bold">{formatRupiah(tot)}</td>;
-                            })}
-                            <td className={`p-3 text-right border border-emerald-200 font-bold ${selectedSchool.sisaPagu >= 0 ? 'text-green-800 bg-green-100' : 'text-red-700 bg-red-100'}`}>
+                            {/* Total Realisasi */}
+                            <td className="p-3 border border-emerald-200 bg-orange-100">
+                              <div className="text-xs text-orange-800 font-bold">
+                                {selectedSchool.sudahDiajukan > 0
+                                  ? <span>{formatRupiah(selectedSchool.sudahDiajukan)} <span className="font-normal text-orange-600">({Object.values(spjSekolah).reduce((s, arr) => {
+                                      const items = filterTw === 'Semua' ? arr : arr.filter(i => i.triwulan === filterTw);
+                                      return s + items.length;
+                                    }, 0)} SPJ)</span></span>
+                                  : <span className="text-gray-400 font-normal">Belum ada SPJ</span>
+                                }
+                              </div>
+                            </td>
+                            <td className={`p-3 text-right border border-emerald-200 font-bold whitespace-nowrap ${selectedSchool.sisaPagu >= 0 ? 'text-green-800 bg-green-100' : 'text-red-700 bg-red-100'}`}>
                               {formatRupiah(selectedSchool.sisaPagu)}
                             </td>
                           </tr>
@@ -828,7 +592,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                       </table>
                     </div>
                     )}
-                    {/* ─────────────────────────────────────────────────────── */}
                   </div>
  
                   <div className="px-6 py-3 border-t flex justify-end">
