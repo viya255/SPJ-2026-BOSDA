@@ -80,6 +80,11 @@
             });
           });
         }
+        // Tunggu 1 detik setelah halaman terbuka, baru panggil fungsi tampil data
+        setTimeout(function() {
+        console.log("Mencoba mengambil data...");
+        tampilkanDataKeTabel();
+        }, 1000);
       const analytics = firebase.analytics();
     </script>
 </head>
