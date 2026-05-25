@@ -47,6 +47,15 @@
             console.error("Gagal menyimpan: ", error);
           });
         }
+        // Tambahkan ini di bagian <script> bawah
+        function tampilkanData() {
+          db.collection("data_spj").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              console.log(`${doc.id} => ${doc.data().sekolah}: ${doc.data().anggaran}`);
+          // Di sini kamu bisa menambahkan logika untuk memasukkan data ke tabel HTML
+            });
+          });
+        }
       const analytics = firebase.analytics();
     </script>
 </head>
