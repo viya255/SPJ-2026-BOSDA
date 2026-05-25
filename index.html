@@ -102,7 +102,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
           'Kebomas': generateSchools(16,35), 'Manyar': generateSchools(36,51), 'Driyorejo': generateSchools(144,169),
           'Wringinanom': generateSchools(170,192), 'Bungah': generateSchools(240,258), 'Sangkapura': generateSchools(325,360)
         };
-        // Semua sekolah flat dengan info kecamatan
         const ALL_SCHOOLS = [];
         Object.entries(SEKOLAH_DATA).forEach(([kec, list]) => {
           list.forEach(nama => {
@@ -173,9 +172,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
           return n.toString();
         };
  
-        // ============================================================
-        // KOMPONEN PAGU INFO CARD (asli, tidak diubah)
-        // ============================================================
         const PaguInfoCard = ({ sekolah, rincian, triwulan, nominalInput, dataSpj }) => {
             if (!sekolah || !rincian || !triwulan) return null;
             const paguInfo = getPaguInfo(sekolah, rincian, triwulan);
@@ -267,7 +263,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
           const [sortField, setSortField] = useState('num');
           const [sortDir, setSortDir] = useState('asc');
  
-          // Fetch dari SheetBest saat halaman dibuka
           useEffect(() => {
             setIsLoadingExt(true);
             fetch('https://api.sheetbest.com/sheets/cfa7def0-feb9-4828-bb0f-e237c95d4dc4')
@@ -277,7 +272,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
               .finally(() => setIsLoadingExt(false));
           }, []);
  
-          // Hitung realisasi per sekolah (dari dataSpj yang sudah Siap Cair / Menunggu)
           const realisasiMap = useMemo(() => {
             const map = {};
             dataSpj.forEach(s => {
@@ -298,7 +292,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             return map;
           }, [dataSpj]);
  
-          // Bangun list sekolah dengan ringkasan pagu
           const schoolSummaries = useMemo(() => {
             return ALL_SCHOOLS.map(s => {
               const numStr = String(s.num);
@@ -315,7 +308,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             }).filter(s => s.hasData);
           }, [realisasiMap]);
  
-          // Filter + sort
           const filtered = useMemo(() => {
             let list = schoolSummaries;
             if (filterKec !== 'Semua') list = list.filter(s => s.kecamatan === filterKec);
@@ -330,7 +322,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             return list;
           }, [schoolSummaries, filterKec, search, sortField, sortDir]);
  
-          // Statistik ringkasan
           const totalPagu = filtered.reduce((s, x) => s + x.paguTotal, 0);
           const totalTerpakai = filtered.reduce((s, x) => s + x.sudahDiajukan, 0);
           const totalSisa = filtered.reduce((s, x) => s + x.sisaPagu, 0);
@@ -347,13 +338,11 @@ function getPaguInfo(sekolah, rincian, triwulan) {
  
           const openDetail = (school) => { setSelectedSchool(school); setIsDetailOpen(true); };
  
-          // Modal Detail Sekolah
           const SchoolDetailModal = ({ school, onClose }) => {
             if (!school) return null;
             const rakSekolah = RAK_DATA[school.numStr] || {};
             const realSekolah = realisasiMap[school.numStr] || {};
- 
-            // Filter TW untuk tabel detail
+
             const twCols = filterTw === 'Semua'
               ? [{ key: '1', label: 'TW 1' }, { key: '2', label: 'TW 2' }, { key: '3', label: 'TW 3' }, { key: '4', label: 'TW 4' }]
               : [{ key: filterTw.replace('Triwulan ', ''), label: filterTw }];
@@ -361,7 +350,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             return (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[92vh]">
-                  {/* Header modal */}
                   <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 rounded-t-2xl flex justify-between items-start">
                     <div>
                       <h3 className="text-xl font-bold text-white">{school.nama}</h3>
@@ -372,7 +360,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                     </button>
                   </div>
  
-                  {/* Ringkasan top */}
                   <div className="grid grid-cols-3 gap-4 px-6 py-4 bg-gray-50 border-b">
                     <div className="text-center">
                       <p className="text-xs text-gray-500 mb-1">Total Pagu Setahun</p>
@@ -388,7 +375,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                     </div>
                   </div>
  
-                  {/* Tabel detail per rekening */}
                   <div className="overflow-auto flex-1 px-6 py-4">
                     <div className="flex items-center gap-3 mb-3">
                       <select value={filterTw} onChange={e => setFilterTw(e.target.value)}
@@ -483,7 +469,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
  
           return (
             <div className="space-y-5">
-              {/* Header */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -499,7 +484,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 )}
               </div>
  
-              {/* Kartu statistik ringkasan */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Pagu (ditampilkan)</p>
@@ -518,7 +502,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 </div>
               </div>
  
-              {/* Filter bar */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-center">
                 <div className="relative flex-1 min-w-[180px]">
                   <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
@@ -547,7 +530,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 )}
               </div>
  
-              {/* Tabel utama */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -623,9 +605,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
               </div>
             </div>
           );
- 
-          // Render modal di luar return utama tapi tetap dalam komponen
-          // Dipindah ke atas return agar bisa dirender
         };
  
         // Wrapper RakBosPage dengan portal modal
@@ -719,6 +698,10 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             const twCols = filterTw === 'Semua'
               ? [{ key: '1', label: 'TW 1' }, { key: '2', label: 'TW 2' }, { key: '3', label: 'TW 3' }, { key: '4', label: 'TW 4' }]
               : [{ key: filterTw.replace('Triwulan ', ''), label: filterTw }];
+
+            // ── TAMBAHAN: state toggle tabel ──
+            const [isTableVisible, setIsTableVisible] = useState(true);
+            // ─────────────────────────────────
  
             return (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
@@ -759,7 +742,19 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                         <option value="Triwulan 4">Triwulan 4</option>
                       </select>
                       <span className="text-xs text-gray-400">{Object.keys(rakSekolah).length} rekening belanja</span>
+
+                      {/* ── TAMBAHAN: Tombol Toggle Tabel ── */}
+                      <button
+                        onClick={() => setIsTableVisible(v => !v)}
+                        className="ml-auto flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border transition bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+                        {isTableVisible ? <IconChevronUp size={14}/> : <IconChevronDown size={14}/>}
+                        {isTableVisible ? 'Sembunyikan Tabel' : 'Tampilkan Tabel'}
+                      </button>
+                      {/* ─────────────────────────────────── */}
                     </div>
+
+                    {/* ── TAMBAHAN: Wrap tabel dengan kondisi isTableVisible ── */}
+                    {isTableVisible && (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm border-collapse min-w-[700px]">
                         <thead>
@@ -832,6 +827,8 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                         </tfoot>
                       </table>
                     </div>
+                    )}
+                    {/* ─────────────────────────────────────────────────────── */}
                   </div>
  
                   <div className="px-6 py-3 border-t flex justify-end">
@@ -864,7 +861,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 )}
               </div>
  
-              {/* Kartu statistik */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Pagu Ditampilkan</p>
@@ -883,7 +879,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 </div>
               </div>
  
-              {/* Filter */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-center">
                 <div className="relative flex-1 min-w-[200px]">
                   <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
@@ -912,7 +907,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 )}
               </div>
  
-              {/* Tabel */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -1140,7 +1134,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
           };
  
-          // --- RENDER DASHBOARD ---
           const renderDashboard = () => (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-800">Ringkasan Alur SPJ</h2>
@@ -1165,7 +1158,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             </div>
           );
  
-          // --- RENDER PENERIMAAN ---
           const renderPenerimaan = () => (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
               <div className="flex justify-between items-start mb-6">
@@ -1247,7 +1239,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             </div>
           );
  
-          // --- TABLE TEMPLATE ---
           const TableTemplate = ({ data, showVerifyAction, isDraggable, onDragStart, onDragOver, onDrop, onDragEnd, draggedId, requiresPicLock, currentPic }) => (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse bg-white rounded-xl shadow-sm">
@@ -1291,7 +1282,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
             </div>
           );
  
-          // --- RENDER UTAMA ---
           return (
             <div className="min-h-screen bg-gray-100 flex font-sans">
               <aside className="w-64 bg-white shadow-md flex-col hidden md:flex z-10">
@@ -1302,8 +1292,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                   <button onClick={() => setActiveTab('verifikasi')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'verifikasi' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconClipboardCheck/> <span className="flex-1 text-left">Antrian Verifikasi</span> {stats.menunggu > 0 && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 rounded-full">{stats.menunggu}</span>}</button>
                   <button onClick={() => setActiveTab('siapCair')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'siapCair' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconBanknote/> <span>Antrian Siap Cair</span></button>
                   <button onClick={() => setActiveTab('kendala')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'kendala' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconAlertCircle/> <span>Revisi & Tunda</span></button>
- 
-                  {/* MENU RAK BOS 2026 — sesuai posisi coretan */}
                   <div className="pt-2 pb-1">
                     <div className="border-t border-gray-200 pt-2">
                       <button onClick={() => setActiveTab('rak')}
@@ -1369,7 +1357,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 </div>
               </main>
  
-              {/* MODAL VERIFIKASI */}
               {isModalOpen && selectedSpj && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                   <div className="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-xl flex flex-col max-h-[90vh]">
@@ -1398,7 +1385,6 @@ function getPaguInfo(sekolah, rincian, triwulan) {
                 </div>
               )}
  
-              {/* MODAL EDIT */}
               {isEditModalOpen && editingSpj && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                   <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
