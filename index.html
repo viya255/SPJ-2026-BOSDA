@@ -47,6 +47,30 @@
             console.error("Gagal menyimpan: ", error);
           });
         }
+        // Tambahkan fungsi ini di dalam tag <script>
+        function tampilkanDataKeTabel() {
+          const tbody = document.getElementById("tabelBody");
+  
+       // Mengambil data dari Firestore
+          db.collection("data_spj").get().then((querySnapshot) => {
+       // Kosongkan tabel dulu
+            tbody.innerHTML = ""; 
+    
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+      // Menambah baris ke dalam tabel HTML
+              tbody.innerHTML += `
+                <tr>
+                  <td class="p-2 border">${data.sekolah}</td>
+                  <td class="p-2 border">${data.anggaran}</td>
+                </tr>
+              `;
+            });
+          });
+        }
+
+      // Panggil fungsi ini saat halaman dimuat
+        window.onload = tampilkanDataKeTabel;
         // Tambahkan ini di bagian <script> bawah
         function tampilkanData() {
           db.collection("data_spj").get().then((querySnapshot) => {
@@ -64,7 +88,17 @@
     <input type="text" id="inputNamaSekolah" placeholder="Nama Sekolah">
     <input type="number" id="inputAnggaran" placeholder="Jumlah Anggaran">
 
-<button onclick="simpanData()">Simpan ke Database</button>
+    <button onclick="simpanData()">Simpan ke Database</button>
+    <table class="w-full mt-4 border-collapse">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border p-2">Nama Sekolah</th>
+          <th class="border p-2">Anggaran</th>
+        </tr>
+      </thead>
+      <tbody id="tabelBody">
+        </tbody>
+    </table>
 
     <!-- DATA RAK PAGU 2026 -->
     <script>
