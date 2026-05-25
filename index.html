@@ -12,81 +12,50 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     <script>
-     // Konfigurasi sudah benar
-      const firebaseConfig = {
-        apiKey: "AIzaSyCz8OHlSJTpiNbh-Czmhe0drYdCThEN-Rs",
-        authDomain: "spj-bosda-2026.firebaseapp.com",
-        projectId: "spj-bosda-2026",
-        storageBucket: "spj-bosda-2026.appspot.com",
-        messagingSenderId: "772724951487",
-        appId: "1:772724951487:web:80131eebb612647d08f90a",
-        measurementId: "G-HKE2LVLHYC"
-      };
+  // 1. Inisialisasi Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCz8OHlSJTpiNbh-Czmhe0drYdCThEN-Rs",
+    authDomain: "spj-bosda-2026.firebaseapp.com",
+    projectId: "spj-bosda-2026",
+    storageBucket: "spj-bosda-2026.appspot.com",
+    messagingSenderId: "772724951487",
+    appId: "1:772724951487:web:80131eebb612647d08f90a",
+    measurementId: "G-HKE2LVLHYC"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-      // Inisialisasi Firebase (Gunakan cara ini untuk versi compat)
-      firebase.initializeApp(firebaseConfig);
-  
-      // Inisialisasi service
-      const db = firebase.firestore();
-      const analytics = firebase.analytics();
-        
-        // Fungsi untuk menyimpan data saat tombol diklik
-        function simpanData() {
-          const nama = document.getElementById("inputNamaSekolah").value;
-          const nominal = document.getElementById("inputAnggaran").value;
+  // 2. Fungsi simpan
+  function simpanData() {
+    const nama = document.getElementById("inputNamaSekolah").value;
+    const nominal = document.getElementById("inputAnggaran").value;
 
-          db.collection("data_spj").add({
-            sekolah: nama,
-            anggaran: parseInt(nominal),
-            tanggal: new Date().toISOString()
-          })
-          .then(() => {
-            alert("Data berhasil tersimpan di Firebase!");
-          })
-          .catch((error) => {
-            console.error("Gagal menyimpan: ", error);
-          });
-        }
-        // Tambahkan fungsi ini di dalam tag <script>
-        function tampilkanDataKeTabel() {
-          const tbody = document.getElementById("tabelBody");
-  
-       // Mengambil data dari Firestore
-          db.collection("data_spj").get().then((querySnapshot) => {
-       // Kosongkan tabel dulu
-            tbody.innerHTML = ""; 
-    
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-      // Menambah baris ke dalam tabel HTML
-              tbody.innerHTML += `
-                <tr>
-                  <td class="p-2 border">${data.sekolah}</td>
-                  <td class="p-2 border">${data.anggaran}</td>
-                </tr>
-              `;
-            });
-          });
-        }
+    db.collection("data_spj").add({
+      sekolah: nama,
+      anggaran: parseInt(nominal),
+      tanggal: new Date().toISOString()
+    })
+    .then(() => {
+      alert("Data berhasil tersimpan!");
+      tampilkanDataKeTabel(); // Update tabel otomatis setelah simpan
+    });
+  }
 
-      // Panggil fungsi ini saat halaman dimuat
-        window.onload = tampilkanDataKeTabel;
-        // Tambahkan ini di bagian <script> bawah
-        function tampilkanData() {
-          db.collection("data_spj").get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              console.log(`${doc.id} => ${doc.data().sekolah}: ${doc.data().anggaran}`);
-          // Di sini kamu bisa menambahkan logika untuk memasukkan data ke tabel HTML
-            });
-          });
-        }
-        // Tunggu 1 detik setelah halaman terbuka, baru panggil fungsi tampil data
-        setTimeout(function() {
-        console.log("Mencoba mengambil data...");
-        tampilkanDataKeTabel();
-        }, 1000);
-      const analytics = firebase.analytics();
-    </script>
+  // 3. Fungsi tampil
+  function tampilkanDataKeTabel() {
+    const tbody = document.getElementById("tabelBody");
+    db.collection("data_spj").get().then((querySnapshot) => {
+      tbody.innerHTML = ""; 
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        tbody.innerHTML += `<tr><td class="border p-2">${data.sekolah}</td><td class="border p-2">${data.anggaran}</td></tr>`;
+      });
+    });
+  }
+
+  // 4. Jalankan saat halaman dibuka
+  window.onload = tampilkanDataKeTabel;
+</script>
 </head>
 <body class="bg-gray-100">
     <div id="root"></div>
