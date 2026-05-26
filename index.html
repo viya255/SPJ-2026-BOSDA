@@ -648,7 +648,7 @@
             e.preventDefault();
             setIsLoading(true);
             const newSpj = {
-              id: `SPJ-${Date.now()}`,
+              id: `SPJ-${dataSpj.length + 1}`,
               kecamatan: addForm.kecamatan, sekolah: addForm.sekolah,
               pic: KECAMATAN_PIC[addForm.kecamatan],
               tanggal: new Date().toISOString().split('T')[0],
