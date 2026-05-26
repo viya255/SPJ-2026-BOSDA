@@ -1419,27 +1419,30 @@
                         (spj.nominal && String(spj.nominal).includes(q))
                       );
                     }
-                    return (
-                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-                      <h2 className="text-xl font-bold">{activeTab === 'verifikasi' ? 'Antrian Verifikasi SPJ' : activeTab === 'siapCair' ? 'Daftar SPJ Siap Cair' : 'Daftar SPJ Revisi & Ditunda'}</h2>
-                      <div className="relative w-full md:w-72">
-                        <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={e => setSearchQuery(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white shadow-sm"
-                          placeholder="Cari sekolah, ID, rincian..."
-                        />
-                        {searchQuery && (
-                          <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
-                        )}
-                      </div>
-                          {activeTab === 'siapCair' && (
-                            <button onClick={() => downloadExcel(dataSpjFiltered)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-md transition">
-                              <IconDownload size={16} className="mr-2"/> Unduh Rekap (Excel)
-                            </button>
-                          )}
+                   return (
+                      <div>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                          <h2 className="text-xl font-bold">{activeTab === 'verifikasi' ? 'Antrian Verifikasi SPJ' : activeTab === 'siapCair' ? 'Daftar SPJ Siap Cair' : 'Daftar SPJ Revisi & Ditunda'}</h2>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <div className="relative w-full md:w-72">
+                              <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+                              <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white shadow-sm"
+                                placeholder="Cari sekolah, ID, rincian..."
+                              />
+                              {searchQuery && (
+                                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+                              )}
+                            </div>
+                            {activeTab === 'siapCair' && (
+                              <button onClick={() => downloadExcel(dataSpjFiltered)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-md transition">
+                                <IconDownload size={16} className="mr-2"/> Unduh Rekap (Excel)
+                              </button>
+                            )}
+                          </div>
                         </div>
                         {activeTab === 'verifikasi' && (
                           <div className="mb-6 bg-blue-50 border border-blue-200 p-4 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
