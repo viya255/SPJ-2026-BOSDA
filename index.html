@@ -440,6 +440,7 @@
           const [editingSpj, setEditingSpj] = useState(null);
           const [draggedId, setDraggedId] = useState(null);
           const [aksesPic, setAksesPic] = useState('Semua');
+          const [searchQuery, setSearchQuery] = useState('');
 
           // ============================================================
           // TAMBAHAN: State untuk RAK BOSDA 2026
@@ -1408,10 +1409,32 @@
                   {(activeTab === 'verifikasi' || activeTab === 'siapCair' || activeTab === 'kendala') && (() => {
                     let dataSpjFiltered = dataSpj.filter(spj => activeTab === 'verifikasi' ? spj.status === 'Menunggu Verifikasi' : activeTab === 'siapCair' ? spj.status === 'Siap Cair' : spj.status === 'Revisi' || spj.status === 'Ditunda');
                     if (activeTab === 'verifikasi' && aksesPic !== 'Semua') dataSpjFiltered = dataSpjFiltered.filter(spj => spj.pic === aksesPic);
+                    if (searchQuery.trim() !== '') {
+                      const q = searchQuery.toLowerCase();
+                      dataSpjFiltered = dataSpjFiltered.filter(spj =>
+                        (spj.sekolah && spj.sekolah.toLowerCase().includes(q)) ||
+                        (spj.id && spj.id.toLowerCase().includes(q)) ||
+                        (spj.kecamatan && spj.kecamatan.toLowerCase().includes(q)) ||
+                        (spj.rincian && spj.rincian.toLowerCase().includes(q)) ||
+                        (spj.nominal && String(spj.nominal).includes(q))
+                      );
+                    }
                     return (
-                      <div>
-                        <div className="flex justify-between items-center mb-4">
-                          <h2 className="text-xl font-bold">{activeTab === 'verifikasi' ? 'Antrian Verifikasi SPJ' : activeTab === 'siapCair' ? 'Daftar SPJ Siap Cair' : 'Daftar SPJ Revisi & Ditunda'}</h2>
+                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                      <h2 className="text-xl font-bold">{activeTab === 'verifikasi' ? 'Antrian Verifikasi SPJ' : activeTab === 'siapCair' ? 'Daftar SPJ Siap Cair' : 'Daftar SPJ Revisi & Ditunda'}</h2>
+                      <div className="relative w-full md:w-72">
+                        <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={e => setSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white shadow-sm"
+                          placeholder="Cari sekolah, ID, rincian..."
+                        />
+                        {searchQuery && (
+                          <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+                        )}
+                      </div>
                           {activeTab === 'siapCair' && (
                             <button onClick={() => downloadExcel(dataSpjFiltered)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-md transition">
                               <IconDownload size={16} className="mr-2"/> Unduh Rekap (Excel)
