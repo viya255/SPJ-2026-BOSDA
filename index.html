@@ -95,6 +95,50 @@
             kode: kode
         };
     }
+
+    // ================================================================
+    // TAMBAHAN BARU: Global cache rakData untuk support sekolah 16-389
+    // Kode asli getPaguInfo di atas TIDAK DIUBAH
+    // ================================================================
+    window.rakDataGlobal = [];
+
+    function getPaguInfoEnhanced(sekolah, rincian, triwulan) {
+        // Coba dulu via RAK_DATA asli (sekolah 1-15)
+        const fromOriginal = getPaguInfo(sekolah, rincian, triwulan);
+        if (fromOriginal) return fromOriginal;
+
+        // Fallback: cari dari rakDataGlobal (data SheetBest, sekolah 16-389)
+        if (!window.rakDataGlobal || window.rakDataGlobal.length === 0) return null;
+        const num = getSchoolNumber(sekolah);
+        if (!num) return null;
+
+        const schoolData = window.rakDataGlobal.find(s => String(s.no) === String(num));
+        if (!schoolData) return null;
+
+        const kode = rincian.split(' ')[0];
+        // Normalisasi kode: cari rincian yang kodenya cocok
+        const rincianItem = schoolData.rincian.find(r => {
+            // Cocokkan kode dengan berbagai format
+            const rKode = r.kode || '';
+            // Ambil suffix angka untuk perbandingan
+            const rSuffix = rKode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+            const kSuffix = kode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+            return rKode === kode || rSuffix === kSuffix;
+        });
+
+        if (!rincianItem) return null;
+
+        const twNum = triwulan.replace('Triwulan ', '');
+        const twKey = `tw${twNum}`;
+        return {
+            total: rincianItem.paguTotal || 0,
+            triwulan: rincianItem[twKey] || 0,
+            kode: kode
+        };
+    }
+    // ================================================================
+    // SELESAI TAMBAHAN BARU getPaguInfoEnhanced
+    // ================================================================
     </script>
 
     <script type="text/babel">
@@ -280,6 +324,107 @@
             );
         };
 
+        // ================================================================
+        // TAMBAHAN BARU: PaguInfoCardEnhanced - support semua 389 sekolah
+        // Menggunakan getPaguInfoEnhanced (fallback ke rakDataGlobal)
+        // PaguInfoCard asli di atas TIDAK DIUBAH
+        // ================================================================
+        const PaguInfoCardEnhanced = ({ sekolah, rincian, triwulan, nominalInput, dataSpj }) => {
+            if (!sekolah || !rincian || !triwulan) return null;
+            const paguInfo = getPaguInfoEnhanced(sekolah, rincian, triwulan);
+
+            // Jika tidak ada di RAK_DATA maupun rakDataGlobal, cek apakah data sedang loading
+            if (!paguInfo) {
+                const num = getSchoolNumber(sekolah);
+                const isInRakData = num && RAK_DATA[num];
+                // Jika sekolah 16-389 dan rakDataGlobal belum terisi, tampilkan loading hint
+                if (num && !isInRakData && window.rakDataGlobal.length === 0) {
+                    return (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-600 italic flex items-center gap-2">
+                            <IconInfo size={15} className="text-blue-400 flex-shrink-0"/>
+                            <span>Info pagu akan tersedia setelah tab <strong>RAK BOS 2026</strong> dibuka minimal sekali untuk memuat data.</span>
+                        </div>
+                    );
+                }
+                return (
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500 italic flex items-center gap-2">
+                        <IconInfo size={15} className="text-gray-400 flex-shrink-0"/>
+                        <span>Data pagu RAK tidak ditemukan untuk kombinasi ini.</span>
+                    </div>
+                );
+            }
+
+            const kodeBelanja = rincian.split(' ')[0];
+            const sudahDiajukan = dataSpj
+                .filter(s => {
+                    const sNum = s.sekolah ? s.sekolah.match(/\b(\d+)\b/)?.[1] : null;
+                    const myNum = sekolah ? sekolah.match(/\b(\d+)\b/)?.[1] : null;
+                    const sKode = s.rincian ? s.rincian.split(' ')[0] : '';
+                    return sNum === myNum && sKode === kodeBelanja && s.triwulan === triwulan
+                        && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair');
+                })
+                .reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+            const sisaPaguTw = paguInfo.triwulan - sudahDiajukan;
+            const sisaPaguTotal = paguInfo.total - sudahDiajukan;
+            const inputNominal = Number(nominalInput) || 0;
+            const twHasNoPagu = paguInfo.triwulan === 0;
+            const isOverBudget = inputNominal > 0 && (inputNominal > sisaPaguTw || inputNominal > sisaPaguTotal);
+            const cardBg   = isOverBudget ? 'bg-red-50 border-red-200'   : twHasNoPagu ? 'bg-amber-50 border-amber-200'   : 'bg-green-50 border-green-200';
+            const headBg   = isOverBudget ? 'bg-red-100 border-red-200'  : twHasNoPagu ? 'bg-amber-100 border-amber-200'  : 'bg-green-100 border-green-200';
+            const headText = isOverBudget ? 'text-red-700'               : twHasNoPagu ? 'text-amber-700'               : 'text-green-700';
+            const HeadIcon = isOverBudget ? IconWarning                  : IconInfo;
+            const headIconColor = isOverBudget ? 'text-red-600' : twHasNoPagu ? 'text-amber-600' : 'text-green-600';
+            const namaSekolah = sekolah.replace('UPT SDN ', 'SDN ').replace(' GRESIK', '');
+            return (
+                <div className={`border rounded-xl overflow-hidden shadow-sm ${cardBg}`}>
+                    <div className={`px-4 py-2.5 flex items-center gap-2 border-b ${headBg}`}>
+                        <HeadIcon size={15} className={`${headIconColor} flex-shrink-0`}/>
+                        <span className={`text-sm font-bold ${headText}`}>Info Pagu ({namaSekolah}) — {triwulan}</span>
+                    </div>
+                    <div className="px-4 py-3">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                            <span className="text-gray-500">Pagu Total (Setahun)</span>
+                            <span className="font-semibold text-gray-800 text-right">{formatRupiah(paguInfo.total)}</span>
+                            <span className="text-gray-500">Pagu {triwulan}</span>
+                            <span className={`font-semibold text-right ${twHasNoPagu ? 'text-amber-600 italic text-xs' : 'text-gray-800'}`}>
+                                {twHasNoPagu ? 'Tidak dianggarkan di TW ini' : formatRupiah(paguInfo.triwulan)}
+                            </span>
+                            <span className="text-gray-500">SPJ Sudah Diajukan</span>
+                            <span className={`font-semibold text-right ${sudahDiajukan > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                {sudahDiajukan > 0 ? formatRupiah(sudahDiajukan) : '—'}
+                            </span>
+                            <div className="col-span-2 border-t border-dashed border-gray-300 my-0.5"></div>
+                            <span className="text-gray-700 font-medium">Sisa Pagu {triwulan}</span>
+                            <span className={`font-bold text-right text-base ${twHasNoPagu ? 'text-amber-600' : sisaPaguTw <= 0 ? 'text-red-600' : 'text-green-700'}`}>
+                                {twHasNoPagu ? '—' : formatRupiah(Math.max(0, sisaPaguTw))}
+                                {!twHasNoPagu && sisaPaguTw > 0 && <span className="text-green-500 ml-1">✓</span>}
+                                {!twHasNoPagu && sisaPaguTw <= 0 && <span className="text-red-500 ml-1">✗</span>}
+                            </span>
+                            <span className="text-gray-700 font-medium">Sisa Pagu Total</span>
+                            <span className={`font-bold text-right ${sisaPaguTotal <= 0 ? 'text-red-600' : 'text-blue-700'}`}>
+                                {formatRupiah(Math.max(0, sisaPaguTotal))}
+                            </span>
+                        </div>
+                        {isOverBudget && inputNominal > 0 && (
+                            <div className="mt-2.5 p-2.5 bg-red-100 rounded-lg text-red-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Nominal yang diinput ({formatRupiah(inputNominal)}) <strong>melebihi sisa pagu!</strong> Harap periksa kembali.</span>
+                            </div>
+                        )}
+                        {twHasNoPagu && (
+                            <div className="mt-2.5 p-2.5 bg-amber-100 rounded-lg text-amber-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Rincian ini <strong>tidak dianggarkan</strong> pada {triwulan}. Pastikan triwulan sudah benar.</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        // ================================================================
+        // SELESAI TAMBAHAN: PaguInfoCardEnhanced
+        // ================================================================
+
         const initialData = [];
 
         function App() {
@@ -348,6 +493,20 @@
               fetchRakData();
             }
           }, [activeTab]);
+
+          // ================================================================
+          // TAMBAHAN BARU: Sync rakData ke window.rakDataGlobal
+          // Agar getPaguInfoEnhanced bisa akses data sekolah 16-389
+          // Kode asli TIDAK DIUBAH
+          // ================================================================
+          useEffect(() => {
+            if (rakData && rakData.length > 0) {
+              window.rakDataGlobal = rakData;
+            }
+          }, [rakData]);
+          // ================================================================
+          // SELESAI TAMBAHAN: Sync rakData ke window.rakDataGlobal
+          // ================================================================
 
           const parseNominal = (val) => {
             if (!val || val === '-' || val === '') return 0;
@@ -650,7 +809,7 @@
             </div>
           );
 
-          // --- RENDER PENERIMAAN (kode asli dipertahankan) ---
+          // --- RENDER PENERIMAAN (kode asli dipertahankan, hanya PaguInfoCard diganti PaguInfoCardEnhanced) ---
           const renderPenerimaan = () => (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
               <div className="flex justify-between items-start mb-6">
@@ -705,7 +864,9 @@
                     </select>
                   </div>
                 </div>
-                <PaguInfoCard sekolah={addForm.sekolah} rincian={addForm.rincian} triwulan={addForm.triwulan} nominalInput={addForm.nominal} dataSpj={dataSpj}/>
+                {/* TAMBAHAN: Gunakan PaguInfoCardEnhanced untuk support semua 389 sekolah */}
+                <PaguInfoCardEnhanced sekolah={addForm.sekolah} rincian={addForm.rincian} triwulan={addForm.triwulan} nominalInput={addForm.nominal} dataSpj={dataSpj}/>
+                {/* PaguInfoCard asli tetap ada (tidak dihapus), hanya diganti penggunaannya di form ini */}
                 <button type="submit" disabled={isLoading}
                   className={`w-full font-bold py-3 rounded-lg mt-4 shadow-md transition flex items-center justify-center ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
                   {isLoading ? (
@@ -774,6 +935,26 @@
                 .reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
             };
 
+            // ================================================================
+            // TAMBAHAN BARU: Helper hitung SPJ diajukan per rincian per sekolah
+            // ================================================================
+            const getSpjDiajukanPerRincian = (uptName, kodeRincian, triwulan) => {
+              return dataSpj
+                .filter(s => {
+                  const sKode = s.rincian ? s.rincian.split(' ')[0] : '';
+                  // Normalisasi kode untuk perbandingan
+                  const normSKode = sKode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+                  const normKode = kodeRincian.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+                  return s.sekolah === uptName
+                    && (normSKode === normKode || sKode === kodeRincian)
+                    && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair');
+                })
+                .reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+            };
+            // ================================================================
+            // SELESAI TAMBAHAN helper getSpjDiajukanPerRincian
+            // ================================================================
+
             // Filter data
             let filtered = rakData.filter(s => {
               const matchSearch = rakSearch === '' ||
@@ -793,14 +974,6 @@
             const totalPagu = filtered.reduce((a, s) => a + s.paguTotal, 0);
             const totalDiajukan = filtered.reduce((a, s) => a + getSpjDiajukan(s.namaUpt), 0);
             const totalSisa = totalPagu - totalDiajukan;
-
-            const MONTHS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-            const TW_MONTHS = {
-              'Triwulan 1': ['Jan','Feb','Mar'],
-              'Triwulan 2': ['Apr','Mei','Jun'],
-              'Triwulan 3': ['Jul','Agu','Sep'],
-              'Triwulan 4': ['Okt','Nov','Des'],
-            };
 
             const openDetail = (sekolah) => {
               setRakDetailSekolah(sekolah);
@@ -953,7 +1126,7 @@
                 {/* MODAL DETAIL SEKOLAH */}
                 {rakDetailOpen && rakDetailSekolah && (
                   <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh]">
+                    <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[92vh]">
                       {/* Modal Header */}
                       <div className="flex justify-between items-start p-5 border-b bg-green-600 rounded-t-2xl">
                         <div>
@@ -1013,6 +1186,10 @@
                                 <tr className="bg-gray-100 text-gray-600">
                                   <th className="p-2.5 text-left font-semibold min-w-[200px]">Rincian Belanja</th>
                                   <th className="p-2.5 text-right font-semibold">Pagu Total</th>
+                                  {/* TAMBAHAN BARU: Kolom Diajukan & Sisa per rincian */}
+                                  <th className="p-2.5 text-right font-semibold bg-orange-50 text-orange-700">Diajukan</th>
+                                  <th className="p-2.5 text-right font-semibold bg-teal-50 text-teal-700">Sisa Pagu</th>
+                                  {/* SELESAI TAMBAHAN kolom */}
                                   <th className="p-2.5 text-center font-semibold bg-blue-50 text-blue-700" colSpan={3}>TW 1 (Jan-Mar)</th>
                                   <th className="p-2.5 text-center font-semibold bg-yellow-50 text-yellow-700" colSpan={3}>TW 2 (Apr-Jun)</th>
                                   <th className="p-2.5 text-center font-semibold bg-green-50 text-green-700" colSpan={3}>TW 3 (Jul-Sep)</th>
@@ -1021,6 +1198,10 @@
                                 <tr className="bg-gray-50 text-gray-500 text-xs">
                                   <th className="p-2 text-left"></th>
                                   <th className="p-2 text-right"></th>
+                                  {/* TAMBAHAN BARU: subheader kosong untuk kolom baru */}
+                                  <th className="p-2 text-right bg-orange-50"></th>
+                                  <th className="p-2 text-right bg-teal-50"></th>
+                                  {/* SELESAI TAMBAHAN */}
                                   <th className="p-2 text-right bg-blue-50">Jan</th><th className="p-2 text-right bg-blue-50">Feb</th><th className="p-2 text-right font-bold bg-blue-100 text-blue-700">Mar</th>
                                   <th className="p-2 text-right bg-yellow-50">Apr</th><th className="p-2 text-right bg-yellow-50">Mei</th><th className="p-2 text-right font-bold bg-yellow-100 text-yellow-700">Jun</th>
                                   <th className="p-2 text-right bg-green-50">Jul</th><th className="p-2 text-right bg-green-50">Agu</th><th className="p-2 text-right font-bold bg-green-100 text-green-700">Sep</th>
@@ -1028,13 +1209,32 @@
                                 </tr>
                               </thead>
                               <tbody>
-                                {rakDetailSekolah.rincian.map((r, idx) => (
+                                {rakDetailSekolah.rincian.map((r, idx) => {
+                                  // TAMBAHAN BARU: hitung diajukan & sisa per rincian
+                                  const diajukanRincian = getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode);
+                                  const sisaRincian = r.paguTotal - diajukanRincian;
+                                  // SELESAI TAMBAHAN
+                                  return (
                                   <tr key={idx} className={`border-t border-gray-100 hover:bg-green-50 ${idx % 2 === 0 ? '' : 'bg-gray-50'}`}>
                                     <td className="p-2.5">
                                       <div className="font-semibold text-gray-800">{r.nama}</div>
                                       <div className="text-gray-400 text-xs">{r.kode}</div>
                                     </td>
                                     <td className="p-2.5 text-right font-bold text-gray-800">{formatRupiah(r.paguTotal)}</td>
+                                    {/* TAMBAHAN BARU: tampilkan diajukan & sisa per baris rincian */}
+                                    <td className="p-2.5 text-right bg-orange-50">
+                                      {diajukanRincian > 0
+                                        ? <span className="font-semibold text-orange-600">{formatRupiah(diajukanRincian)}</span>
+                                        : <span className="text-gray-300">—</span>}
+                                    </td>
+                                    <td className="p-2.5 text-right bg-teal-50">
+                                      <span className={`font-bold ${sisaRincian < 0 ? 'text-red-600' : sisaRincian === r.paguTotal ? 'text-gray-500' : 'text-teal-700'}`}>
+                                        {formatRupiah(Math.max(0, sisaRincian))}
+                                        {sisaRincian < r.paguTotal && sisaRincian >= 0 && diajukanRincian > 0 && <span className="ml-1 text-orange-400">↓</span>}
+                                        {sisaRincian < 0 && <span className="ml-1">⚠</span>}
+                                      </span>
+                                    </td>
+                                    {/* SELESAI TAMBAHAN */}
                                     {/* TW1 */}
                                     <td className="p-2 text-right bg-blue-50 text-blue-800">{r.jan > 0 ? formatRupiah(r.jan) : <span className="text-gray-300">—</span>}</td>
                                     <td className="p-2 text-right bg-blue-50 text-blue-800">{r.feb > 0 ? formatRupiah(r.feb) : <span className="text-gray-300">—</span>}</td>
@@ -1052,12 +1252,27 @@
                                     <td className="p-2 text-right bg-purple-50 text-purple-800">{r.nov > 0 ? formatRupiah(r.nov) : <span className="text-gray-300">—</span>}</td>
                                     <td className="p-2 text-right bg-purple-100 text-purple-900 font-semibold">{r.des > 0 ? formatRupiah(r.des) : <span className="text-gray-300">—</span>}</td>
                                   </tr>
-                                ))}
+                                  );
+                                })}
                               </tbody>
                               <tfoot>
                                 <tr className="bg-gray-200 font-bold border-t-2 border-gray-300">
                                   <td className="p-2.5 text-gray-700">TOTAL</td>
                                   <td className="p-2.5 text-right text-gray-800">{formatRupiah(rakDetailSekolah.paguTotal)}</td>
+                                  {/* TAMBAHAN BARU: total diajukan & sisa di footer */}
+                                  <td className="p-2.5 text-right bg-orange-100 text-orange-700">
+                                    {(() => {
+                                      const totalDiajukanRincian = rakDetailSekolah.rincian.reduce((acc, r) => acc + getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode), 0);
+                                      return totalDiajukanRincian > 0 ? formatRupiah(totalDiajukanRincian) : <span className="text-gray-400 font-normal">—</span>;
+                                    })()}
+                                  </td>
+                                  <td className="p-2.5 text-right bg-teal-100 text-teal-800">
+                                    {(() => {
+                                      const totalDiajukanRincian = rakDetailSekolah.rincian.reduce((acc, r) => acc + getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode), 0);
+                                      return formatRupiah(Math.max(0, rakDetailSekolah.paguTotal - totalDiajukanRincian));
+                                    })()}
+                                  </td>
+                                  {/* SELESAI TAMBAHAN footer */}
                                   <td className="p-2 text-right bg-blue-100 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.jan,0))}</td>
                                   <td className="p-2 text-right bg-blue-100 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.feb,0))}</td>
                                   <td className="p-2 text-right bg-blue-200 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.mar,0))}</td>
