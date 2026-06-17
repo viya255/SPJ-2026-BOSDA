@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem SPJ BOS - Dinas Pendidikan</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
@@ -146,7 +146,7 @@
     // ================================================================
     </script>
 
-    <script type="text/babel" data-type="script" data-presets="react,env">
+    <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
         // --- IKON (kode asli dipertahankan) ---
@@ -670,23 +670,13 @@
               return;
             }
             const triwulanText = addForm.triwulan.join(' & ');
-           const tanggalHariIni = new Date().toISOString().split('T')[0];
-           const newSpj = {
+            const newSpj = {
               id: `SPJ-${dataSpj.length + 1}`,
               kecamatan: addForm.kecamatan, sekolah: addForm.sekolah,
               pic: KECAMATAN_PIC[addForm.kecamatan],
-              tanggal: tanggalHariIni,
+              tanggal: new Date().toISOString().split('T')[0],
               triwulan: triwulanText, rincian: addForm.rincian,
-              nominal: Number(addForm.nominal),
-              status: 'Menunggu Verifikasi',
-              catatan: '-',
-              riwayatRevisi: [
-                {
-                  tanggal: tanggalHariIni,
-                  status: 'Masuk',
-                  catatan: `SPJ diterima — ${addForm.rincian} — ${triwulanText}`
-                }
-              ]
+              nominal: Number(addForm.nominal), status: 'Menunggu Verifikasi', catatan: '-'
             };
             try {
               await db.collection("spj_bos_data").add(newSpj);
@@ -1700,4 +1690,3 @@
     </script>
 </body>
 </html>
-
