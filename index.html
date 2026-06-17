@@ -443,6 +443,10 @@
           const [selectedSpj, setSelectedSpj] = useState(null);
           const [verdict, setVerdict] = useState('Siap Cair');
           const [notes, setNotes] = useState('');
+          const [editingRiwayatIdx, setEditingRiwayatIdx] = useState(null);
+          const [editingRiwayatText, setEditingRiwayatText] = useState('');
+          const [checkedRiwayat, setCheckedRiwayat] = useState({});
+          const [localRiwayat, setLocalRiwayat] = useState([]);
           const [isEditModalOpen, setIsEditModalOpen] = useState(false);
           const [editingSpj, setEditingSpj] = useState(null);
           const [draggedId, setDraggedId] = useState(null);
@@ -706,17 +710,16 @@
           // SELESAI TAMBAHAN handleAddNewSpj
           // ============================================================
 
-          const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setIsModalOpen(true); };
+          const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setLocalRiwayat(spj.riwayatRevisi ? [...spj.riwayatRevisi] : []); setCheckedRiwayat({}); setEditingRiwayatIdx(null); setEditingRiwayatText(''); setIsModalOpen(true); };
 
           // ============================================================
           // TAMBAHAN: submitVerification dengan Firestore .update()
           // ============================================================
           const submitVerification = async () => {
             const today = new Date().toISOString().split('T')[0];
-            const riwayatLama = selectedSpj.riwayatRevisi || [];
             const riwayatBaru = notes.trim()
-              ? [...riwayatLama, { tanggal: today, status: verdict, catatan: notes }]
-              : riwayatLama;
+              ? [...localRiwayat, { tanggal: today, status: verdict, catatan: notes }]
+              : localRiwayat;
             const updatePayload = { status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, riwayatRevisi: riwayatBaru, tanggal: today };
             const updatedData = dataSpj.map(spj => spj.id === selectedSpj.id ? { ...spj, ...updatePayload } : spj);
             setDataSpj(updatedData);
@@ -1583,21 +1586,79 @@
                           <button onClick={() => setVerdict('Ditunda')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Ditunda' ? 'bg-orange-100 border-orange-500 text-orange-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Tunda Proses</button>
                         </div>
                       </div>
-                      {selectedSpj.riwayatRevisi && selectedSpj.riwayatRevisi.length > 0 && (
+                      {localRiwayat.length > 0 && (
                         <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                          <p className="text-xs font-bold text-orange-700 mb-2">
-                            🕐 Riwayat Catatan Sebelumnya:
-                          </p>
-                          <div className="space-y-1.5 max-h-32 overflow-y-auto">
-                            {selectedSpj.riwayatRevisi.map((r, i) => (
-                              <div key={i} className="text-xs bg-white border border-orange-100 rounded px-2.5 py-1.5">
-                                <span className={`font-bold mr-1 ${r.status === 'Revisi' ? 'text-red-600' : r.status === 'Ditunda' ? 'text-orange-600' : 'text-green-600'}`}>
-                                  [{r.status} — {r.tanggal}]
-                                </span>
-                                <span className="text-gray-700">{r.catatan || '(tanpa catatan)'}</span>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-bold text-orange-700">🕐 Riwayat Catatan Sebelumnya:</p>
+                            {Object.values(checkedRiwayat).some(Boolean) && (
+                              <button
+                                onClick={() => {
+                                  const newRiwayat = localRiwayat.filter((_, i) => !checkedRiwayat[i]);
+                                  setLocalRiwayat(newRiwayat);
+                                  setCheckedRiwayat({});
+                                }}
+                                className="text-xs bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded font-bold transition flex items-center gap-1">
+                                🗑 Hapus yang dicentang ({Object.values(checkedRiwayat).filter(Boolean).length})
+                              </button>
+                            )}
+                          </div>
+                          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                            {localRiwayat.map((r, i) => (
+                              <div key={i} className={`text-xs rounded px-2.5 py-1.5 border flex items-start gap-2 transition ${checkedRiwayat[i] ? 'bg-red-50 border-red-200 opacity-60' : 'bg-white border-orange-100'}`}>
+                                {/* Checkbox */}
+                                <input
+                                  type="checkbox"
+                                  checked={!!checkedRiwayat[i]}
+                                  onChange={() => setCheckedRiwayat(prev => ({ ...prev, [i]: !prev[i] }))}
+                                  className="mt-0.5 w-3.5 h-3.5 accent-red-500 flex-shrink-0 cursor-pointer"
+                                  title="Centang untuk hapus"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <span className={`font-bold mr-1 ${r.status === 'Revisi' ? 'text-red-600' : r.status === 'Ditunda' ? 'text-orange-600' : r.status === 'Masuk' ? 'text-blue-600' : 'text-green-600'}`}>
+                                    [{r.status} — {r.tanggal}]
+                                  </span>
+                                  {/* Mode edit atau tampil */}
+                                  {editingRiwayatIdx === i ? (
+                                    <div className="mt-1 flex gap-1.5 items-center">
+                                      <input
+                                        type="text"
+                                        value={editingRiwayatText}
+                                        onChange={e => setEditingRiwayatText(e.target.value)}
+                                        className="flex-1 border border-blue-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                        autoFocus
+                                        onKeyDown={e => {
+                                          if (e.key === 'Enter') {
+                                            const updated = localRiwayat.map((item, idx) => idx === i ? { ...item, catatan: editingRiwayatText } : item);
+                                            setLocalRiwayat(updated);
+                                            setEditingRiwayatIdx(null);
+                                          }
+                                          if (e.key === 'Escape') setEditingRiwayatIdx(null);
+                                        }}
+                                      />
+                                      <button onClick={() => {
+                                        const updated = localRiwayat.map((item, idx) => idx === i ? { ...item, catatan: editingRiwayatText } : item);
+                                        setLocalRiwayat(updated);
+                                        setEditingRiwayatIdx(null);
+                                      }} className="bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-bold hover:bg-blue-600">✓</button>
+                                      <button onClick={() => setEditingRiwayatIdx(null)} className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-xs hover:bg-gray-300">✕</button>
+                                    </div>
+                                  ) : (
+                                    <span className={`text-gray-700 ${checkedRiwayat[i] ? 'line-through' : ''}`}>{r.catatan || '(tanpa catatan)'}</span>
+                                  )}
+                                </div>
+                                {/* Tombol Edit */}
+                                {editingRiwayatIdx !== i && !checkedRiwayat[i] && (
+                                  <button
+                                    onClick={() => { setEditingRiwayatIdx(i); setEditingRiwayatText(r.catatan || ''); }}
+                                    className="flex-shrink-0 text-blue-400 hover:text-blue-600 transition ml-1"
+                                    title="Edit catatan">
+                                    ✏️
+                                  </button>
+                                )}
                               </div>
                             ))}
                           </div>
+                          <p className="text-xs text-gray-400 mt-1.5 italic">✏️ klik untuk edit teks • ☑ centang lalu hapus untuk menghapus baris</p>
                         </div>
                       )}
                       <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
