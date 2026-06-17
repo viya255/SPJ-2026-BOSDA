@@ -54,7 +54,7 @@
   }
 
   // 4. Jalankan saat halaman dibuka (kode asli dipertahankan)
-  window.onload = tampilkanDataKeTabel;
+  window.addEventListener('load', tampilkanDataKeTabel);
 </script>
 </head>
 <body class="bg-gray-100">
@@ -146,7 +146,7 @@
     // ================================================================
     </script>
 
-    <script type="text/babel" data-type="script" data-presets="react,env">
+    <script type="text/babel" data-type="script">
         const { useState, useEffect, useRef } = React;
 
         // --- IKON (kode asli dipertahankan) ---
