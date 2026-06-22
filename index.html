@@ -1,1 +1,1802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem SPJ BOS - Dinas Pendidikan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.20/babel.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+    <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCz8OHlSJTpiNbh-Czmhe0drYdCThEN-Rs",
+    authDomain: "spj-bosda-2026.firebaseapp.com",
+    projectId: "spj-bosda-2026",
+    storageBucket: "spj-bosda-2026.appspot.com",
+    messagingSenderId: "772724951487",
+    appId: "1:772724951487:web:80131eebb612647d08f90a",
+    measurementId: "G-HKE2LVLHYC"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
+  function simpanData() {
+    const nama = document.getElementById("inputNamaSekolah").value;
+    const nominal = document.getElementById("inputAnggaran").value;
+    db.collection("data_spj").add({
+      sekolah: nama,
+      anggaran: parseInt(nominal),
+      tanggal: new Date().toISOString()
+    }).then(() => {
+      alert("Data berhasil tersimpan!");
+      tampilkanDataKeTabel();
+    });
+  }
+
+  function tampilkanDataKeTabel() {
+    const tbody = document.getElementById("tabelBody");
+    db.collection("data_spj").get().then((querySnapshot) => {
+      tbody.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        tbody.innerHTML += `<tr><td class="border p-2">${data.sekolah}</td><td class="border p-2">${data.anggaran}</td></tr>`;
+      });
+    });
+  }
+
+  window.addEventListener('load', tampilkanDataKeTabel);
+</script>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+    <input type="text" id="inputNamaSekolah" placeholder="Nama Sekolah" style="display:none">
+    <input type="number" id="inputAnggaran" placeholder="Jumlah Anggaran" style="display:none">
+    <button onclick="simpanData()" style="display:none">Simpan ke Database</button>
+    <table class="w-full mt-4 border-collapse" style="display:none">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border p-2">Nama Sekolah</th>
+          <th class="border p-2">Anggaran</th>
+        </tr>
+      </thead>
+      <tbody id="tabelBody"></tbody>
+    </table>
+
+    <script>
+    const RAK_DATA = {"1":{"5.1.02.01.01.0024":{"t":8786601,"1":8786601,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":8658222,"1":8658222,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":12773724,"1":0,"2":9712500,"3":3061224,"4":0},"5.1.02.01.01.0029":{"t":9873450,"1":0,"2":9873450,"3":0,"4":0},"5.1.02.01.01.0030":{"t":8830053,"1":8830053,"2":0,"3":0,"4":0},"5.1.02.01.01.0031":{"t":3129090,"1":0,"2":0,"3":3129090,"4":0},"5.1.02.01.01.0037":{"t":3325005,"1":0,"2":3325005,"3":0,"4":0}},"2":{"5.1.02.01.01.0024":{"t":4407600,"1":4407600,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":4138100,"1":0,"2":0,"3":0,"4":4138100},"5.1.02.01.01.0026":{"t":69700,"1":0,"2":0,"3":69700,"4":0},"5.1.02.01.01.0027":{"t":880000,"1":440000,"2":0,"3":440000,"4":0},"5.1.02.01.01.0029":{"t":5686800,"1":0,"2":0,"3":0,"4":5686800},"5.1.02.01.01.0030":{"t":4901400,"1":0,"2":0,"3":4901400,"4":0},"5.1.02.01.01.0031":{"t":6961600,"1":6961600,"2":0,"3":0,"4":0},"5.1.02.01.01.0037":{"t":2884800,"1":0,"2":2884800,"3":0,"4":0}},"3":{"5.1.02.01.01.0024":{"t":6489800,"1":6489800,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":5788000,"1":0,"2":0,"3":0,"4":5788000},"5.1.02.01.01.0026":{"t":5343600,"1":468000,"2":2440000,"3":697600,"4":1738000},"5.1.02.01.01.0027":{"t":1100000,"1":0,"2":1100000,"3":0,"4":0},"5.1.02.01.01.0029":{"t":5593600,"1":5593600,"2":0,"3":0,"4":0},"5.1.02.01.01.0030":{"t":5106800,"1":0,"2":0,"3":5106800,"4":0},"5.1.02.01.01.0031":{"t":2518200,"1":0,"2":0,"3":0,"4":2518200}},"4":{"5.1.02.01.01.0024":{"t":15807000,"1":15807000,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":13655600,"1":0,"2":0,"3":0,"4":13655600},"5.1.02.01.01.0026":{"t":32402300,"1":9300000,"2":7000000,"3":7500000,"4":8602300},"5.1.02.01.01.0027":{"t":1034000,"1":0,"2":0,"3":0,"4":1034000},"5.1.02.01.01.0029":{"t":18153300,"1":9076650,"2":0,"3":9076650,"4":0},"5.1.02.01.01.0030":{"t":10057700,"1":0,"2":0,"3":0,"4":10057700},"5.1.02.01.01.0031":{"t":7283100,"1":7283100,"2":0,"3":0,"4":0},"5.1.02.01.01.0037":{"t":1202000,"1":0,"2":1202000,"3":0,"4":0}},"5":{"5.1.02.01.01.0024":{"t":14973000,"1":8810000,"2":0,"3":0,"4":6163000},"5.1.02.01.01.0025":{"t":14761800,"1":7217600,"2":0,"3":7544200,"4":0},"5.1.02.01.01.0026":{"t":26592500,"1":13424000,"2":0,"3":3930000,"4":9238500},"5.1.02.01.01.0027":{"t":1100000,"1":1100000,"2":0,"3":0,"4":0},"5.1.02.01.01.0029":{"t":20241000,"1":0,"2":8966000,"3":6160000,"4":5115000},"5.1.02.01.01.0030":{"t":14597700,"1":8817700,"2":0,"3":0,"4":5780000},"5.1.02.01.01.0031":{"t":3524000,"1":0,"2":0,"3":0,"4":3524000},"5.1.02.01.01.0037":{"t":1640000,"1":0,"2":0,"3":0,"4":1640000}},"6":{"5.1.02.01.01.0024":{"t":12994400,"1":6113200,"2":0,"3":0,"4":6881200},"5.1.02.01.01.0025":{"t":25964800,"1":12995900,"2":0,"3":12968900,"4":0},"5.1.02.01.01.0026":{"t":59574700,"1":16938300,"2":14733600,"3":9566800,"4":18336000},"5.1.02.01.01.0030":{"t":7296000,"1":2952600,"2":0,"3":0,"4":4343400},"5.1.02.01.01.0031":{"t":9410100,"1":3512600,"2":0,"3":1448100,"4":4449400}},"7":{"5.1.02.01.01.0024":{"t":11133800,"1":11133800,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":5471900,"1":5471900,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":26039000,"1":6971000,"2":3740000,"3":6978000,"4":8350000},"5.1.02.01.01.0027":{"t":990000,"1":990000,"2":0,"3":0,"4":0},"5.1.02.01.01.0029":{"t":3983600,"1":3983600,"2":0,"3":0,"4":0},"5.1.02.01.01.0030":{"t":11816000,"1":0,"2":0,"3":0,"4":11816000},"5.1.02.01.01.0031":{"t":3145800,"1":0,"2":0,"3":3145800,"4":0},"5.1.02.01.01.0034":{"t":2682400,"1":0,"2":0,"3":0,"4":2682400}},"8":{"5.1.02.01.01.0024":{"t":6688000,"1":6688000,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":6477200,"1":0,"2":0,"3":0,"4":6477200},"5.1.02.01.01.0026":{"t":5456800,"1":1344000,"2":2696000,"3":0,"4":1416800},"5.1.02.01.01.0027":{"t":1100000,"1":0,"2":1100000,"3":0,"4":0},"5.1.02.01.01.0029":{"t":4772000,"1":4772000,"2":0,"3":0,"4":0},"5.1.02.01.01.0030":{"t":6125600,"1":0,"2":0,"3":6125600,"4":0},"5.1.02.01.01.0031":{"t":2330400,"1":0,"2":0,"3":0,"4":2330400}},"9":{"5.1.02.01.01.0024":{"t":2424500,"1":2424500,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":2546400,"1":2546400,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":4922400,"1":0,"2":0,"3":0,"4":4922400},"5.1.02.01.01.0027":{"t":880000,"1":0,"2":0,"3":880000,"4":0},"5.1.02.01.01.0029":{"t":2820600,"1":0,"2":0,"3":0,"4":2820600},"5.1.02.01.01.0030":{"t":4051400,"1":4051400,"2":0,"3":0,"4":0},"5.1.02.01.01.0031":{"t":1497500,"1":0,"2":0,"3":1497500,"4":0},"5.1.02.01.01.0037":{"t":977200,"1":0,"2":0,"3":0,"4":977200}},"10":{"5.1.02.01.01.0024":{"t":3304700,"1":3304700,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":4326000,"1":0,"2":0,"3":0,"4":4326000},"5.1.02.01.01.0026":{"t":3173600,"1":0,"2":0,"3":3173600,"4":0},"5.1.02.01.01.0029":{"t":1903000,"1":0,"2":1903000,"3":0,"4":0},"5.1.02.01.01.0030":{"t":3779700,"1":3779700,"2":0,"3":0,"4":0},"5.1.02.01.01.0031":{"t":1413000,"1":0,"2":0,"3":0,"4":1413000}},"11":{"5.1.02.01.01.0024":{"t":2751100,"1":0,"2":0,"3":2751100,"4":0},"5.1.02.01.01.0025":{"t":4916900,"1":4916900,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":33527200,"1":7848000,"2":3744000,"3":7488000,"4":14447200},"5.1.02.01.01.0029":{"t":2384000,"1":0,"2":0,"3":2384000,"4":0},"5.1.02.01.01.0030":{"t":266400,"1":0,"2":0,"3":266400,"4":0},"5.1.02.01.01.0031":{"t":1614400,"1":1614400,"2":0,"3":0,"4":0}},"12":{"5.1.02.01.01.0024":{"t":17072000,"1":17072000,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":8664200,"1":8664200,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":21136500,"1":5060000,"2":3560000,"3":5350000,"4":7166500},"5.1.02.01.01.0027":{"t":990000,"1":990000,"2":0,"3":0,"4":0},"5.1.02.01.01.0029":{"t":7828800,"1":0,"2":7828800,"3":0,"4":0},"5.1.02.01.01.0030":{"t":18271200,"1":0,"2":0,"3":0,"4":18271200},"5.1.02.01.01.0031":{"t":7532300,"1":0,"2":7532300,"3":0,"4":0}},"13":{"5.1.02.01.01.0024":{"t":5221500,"1":5221500,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":4617000,"1":0,"2":0,"3":4617000,"4":0},"5.1.02.01.01.0026":{"t":3854500,"1":1333600,"2":1656600,"3":0,"4":864300},"5.1.02.01.01.0027":{"t":660000,"1":660000,"2":0,"3":0,"4":0},"5.1.02.01.01.0029":{"t":2282100,"1":0,"2":0,"3":0,"4":2282100},"5.1.02.01.01.0030":{"t":3984600,"1":0,"2":0,"3":0,"4":3984600},"5.1.02.01.01.0031":{"t":1791200,"1":1791200,"2":0,"3":0,"4":0},"5.1.02.01.01.0037":{"t":551600,"1":0,"2":551600,"3":0,"4":0}},"14":{"5.1.02.01.01.0024":{"t":9676200,"1":9676200,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":8805000,"1":8805000,"2":0,"3":0,"4":0},"5.1.02.01.01.0026":{"t":2952400,"1":1676300,"2":1276100,"3":0,"4":0},"5.1.02.01.01.0029":{"t":8400000,"1":2856000,"2":0,"3":0,"4":5544000},"5.1.02.01.01.0030":{"t":18102900,"1":0,"2":0,"3":9367500,"4":8735400},"5.1.02.01.01.0031":{"t":6376200,"1":0,"2":1558200,"3":0,"4":4818000},"5.1.02.01.01.0034":{"t":1295800,"1":0,"2":1295800,"3":0,"4":0},"5.1.02.01.01.0037":{"t":901500,"1":901500,"2":0,"3":0,"4":0}},"15":{"5.1.02.01.01.0024":{"t":8468700,"1":8468700,"2":0,"3":0,"4":0},"5.1.02.01.01.0025":{"t":14370000,"1":0,"2":0,"3":0,"4":14370000},"5.1.02.01.01.0026":{"t":19420000,"1":7480000,"2":0,"3":9510000,"4":2430000},"5.1.02.01.01.0027":{"t":550000,"1":0,"2":0,"3":0,"4":550000},"5.1.02.01.01.0029":{"t":5225000,"1":5225000,"2":0,"3":0,"4":0},"5.1.02.01.01.0030":{"t":6689800,"1":0,"2":6689800,"3":0,"4":0},"5.1.02.01.01.0037":{"t":2404000,"1":0,"2":0,"3":2404000,"4":0}}};
+
+    function getSchoolNumber(name) {
+        if (!name) return null;
+        const m = name.match(/\b(\d+)\b/);
+        return m ? m[1] : null;
+    }
+
+    function getPaguInfo(sekolah, rincian, triwulan) {
+        const num = getSchoolNumber(sekolah);
+        if (!num || !RAK_DATA[num]) return null;
+        const kode = rincian.split(' ')[0];
+        if (!RAK_DATA[num][kode]) return null;
+        const twArr = Array.isArray(triwulan) ? triwulan : [triwulan];
+        // Hitung total pagu untuk semua TW yang dipilih
+        const totalTwPagu = twArr.reduce((acc, twStr) => {
+            const twNum = twStr ? twStr.replace('Triwulan ', '') : '1';
+            return acc + (RAK_DATA[num][kode][twNum] || 0);
+        }, 0);
+        return {
+            total: RAK_DATA[num][kode]['t'] || 0,
+            triwulan: totalTwPagu,
+            kode: kode
+        };
+    }
+
+    window.rakDataGlobal = [];
+
+    function getPaguInfoEnhanced(sekolah, rincian, triwulan) {
+        const fromOriginal = getPaguInfo(sekolah, rincian, triwulan);
+        if (fromOriginal) return fromOriginal;
+        if (!window.rakDataGlobal || window.rakDataGlobal.length === 0) return null;
+        const num = getSchoolNumber(sekolah);
+        if (!num) return null;
+        const schoolData = window.rakDataGlobal.find(s => String(s.no) === String(num));
+        if (!schoolData) return null;
+        const kode = rincian.split(' ')[0];
+        const rincianItem = schoolData.rincian.find(r => {
+            const rKode = r.kode || '';
+            const rSuffix = rKode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+            const kSuffix = kode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+            return rKode === kode || rSuffix === kSuffix;
+        });
+        if (!rincianItem) return null;
+        const twArr = Array.isArray(triwulan) ? triwulan : [triwulan];
+        const totalTwPagu = twArr.reduce((acc, twStr) => {
+            const twNum = twStr ? twStr.replace('Triwulan ', '') : '1';
+            const twKey = `tw${twNum}`;
+            return acc + (rincianItem[twKey] || 0);
+        }, 0);
+        return {
+            total: rincianItem.paguTotal || 0,
+            triwulan: totalTwPagu,
+            kode: kode
+        };
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const IconDashboard = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>;
+        const IconFileText = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>;
+        const IconClipboardCheck = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>;
+        const IconBanknote = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>;
+        const IconAlertCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
+        const IconCheckCircle2 = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
+        const IconXCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>;
+        const IconClock = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+        const IconPlusCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>;
+        const IconMapPin = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>;
+        const IconEdit = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>;
+        const IconTrash = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+        const IconChevronDown = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
+        const IconDownload = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
+        const IconInfo = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
+        const IconWarning = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>;
+        const IconWifi = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>;
+        const IconTable = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>;
+        const IconEye = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
+        const IconSearch = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
+        const IconFilter = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>;
+        // BARU: Icon untuk Revisi dan Tunda terpisah
+        const IconRotateCcw = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+        const IconPauseCircle = ({size=20, className=""}) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="10" x2="10" y1="15" y2="9"/><line x1="14" x2="14" y1="15" y2="9"/></svg>;
+
+        const KECAMATAN_PIC = {
+          'Gresik': 'Dimas', 'Cerme': 'Dimas', 'Duduksampeyan': 'Dimas', 'Benjeng': 'Dimas', 'Menganti': 'Dimas', 'Tambak': 'Dimas',
+          'Balongpanggang': 'Eva', 'Kedamean': 'Eva', 'Sidayu': 'Eva', 'Dukun': 'Eva', 'Ujungpangkah': 'Eva', 'Panceng': 'Eva',
+          'Kebomas': 'Viya', 'Manyar': 'Viya', 'Driyorejo': 'Viya', 'Wringinanom': 'Viya', 'Bungah': 'Viya', 'Sangkapura': 'Viya'
+        };
+        const KECAMATAN_LIST = Object.keys(KECAMATAN_PIC).sort();
+        const PIC_LIST = [...new Set(Object.values(KECAMATAN_PIC))].sort();
+
+        const generateSchools = (start, end) => {
+          const schools = [];
+          for (let i = start; i <= end; i++) schools.push(`UPT SDN ${i} GRESIK`);
+          return schools;
+        };
+        const SEKOLAH_DATA = {
+          'Gresik': generateSchools(1,15), 'Cerme': generateSchools(52,76), 'Duduksampeyan': generateSchools(77,92),
+          'Benjeng': generateSchools(93,117), 'Menganti': generateSchools(214,239), 'Tambak': generateSchools(361,389),
+          'Balongpanggang': generateSchools(118,143), 'Kedamean': generateSchools(193,213), 'Sidayu': generateSchools(259,272),
+          'Dukun': generateSchools(273,292), 'Ujungpangkah': generateSchools(293,308), 'Panceng': generateSchools(309,324),
+          'Kebomas': generateSchools(16,35), 'Manyar': generateSchools(36,51), 'Driyorejo': generateSchools(144,169),
+          'Wringinanom': generateSchools(170,192), 'Bungah': generateSchools(240,258), 'Sangkapura': generateSchools(325,360)
+        };
+        const RINCIAN_OPTIONS = [
+          "5.1.02.01.01.0002 Belanja Bahan-Bahan Kimia","5.1.02.01.01.0012 Belanja Bahan-Bahan Lainnya",
+          "5.1.02.01.01.0024 Belanja Alat Tulis Kantor","5.1.02.01.01.0025 Belanja Kertas dan Cover",
+          "5.1.02.01.01.0026 Belanja Bahan Cetak dan Penggandaan","5.1.02.01.01.0027 Belanja Benda Pos",
+          "5.1.02.01.01.0029 Belanja Bahan Komputer","5.1.02.01.01.0030 Belanja Perabot Kantor",
+          "5.1.02.01.01.0031 Belanja Alat Listrik","5.1.02.01.01.0039 Belanja Seragam (Diserahkan)",
+          "5.1.02.01.01.0034 Belanja Perlengkapan Pendukung Olahraga","5.1.02.01.01.0035 Belanja Suvenir/Cendera Mata",
+          "5.1.02.01.01.0037 Belanja Obat-Obatan","5.1.02.01.01.0043 Belanja Natura",
+          "5.1.02.01.01.0052 Belanja Mamin Rapat","5.1.02.01.01.0058 Belanja Mamin Aktivitas Lapangan"
+        ];
+
+        const CustomComboBox = ({ name, value, defaultValue, onChange, options, placeholder, required, className }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [inputValue, setInputValue] = useState(value !== undefined ? value : (defaultValue || ''));
+            const [isTyping, setIsTyping] = useState(false);
+            const wrapperRef = useRef(null);
+            useEffect(() => { if (value !== undefined) setInputValue(value); }, [value]);
+            useEffect(() => {
+                const handleClickOutside = (event) => {
+                    if (wrapperRef.current && !wrapperRef.current.contains(event.target)) { setIsOpen(false); setIsTyping(false); }
+                };
+                document.addEventListener('mousedown', handleClickOutside);
+                return () => document.removeEventListener('mousedown', handleClickOutside);
+            }, []);
+            const displayOptions = isTyping && inputValue ? options.filter(opt => opt.toLowerCase().includes(inputValue.toLowerCase())) : options;
+            return (
+                <div ref={wrapperRef} className="relative w-full">
+                    <input type="text" name={name} value={inputValue}
+                        onChange={(e) => { setInputValue(e.target.value); setIsTyping(true); setIsOpen(true); if (onChange) onChange(e); }}
+                        onFocus={() => { setIsOpen(true); setIsTyping(false); }}
+                        onClick={() => { setIsOpen(true); setIsTyping(false); }}
+                        className={`${className} pr-10`} placeholder={placeholder} required={required} autoComplete="off" />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={() => { setIsOpen(!isOpen); setIsTyping(false); }}>
+                        <IconChevronDown size={18} className="text-gray-400 hover:text-gray-700 transition" />
+                    </div>
+                    {isOpen && (
+                        <ul className="absolute z-50 w-full bg-white border border-gray-300 rounded-lg shadow-2xl max-h-60 overflow-y-auto mt-1 top-full left-0">
+                            {displayOptions.length > 0 ? displayOptions.map((opt, idx) => (
+                                <li key={idx} className="px-4 py-2.5 cursor-pointer hover:bg-blue-100 text-sm border-b border-gray-100 last:border-b-0 text-gray-700 transition"
+                                    onMouseDown={(e) => { e.preventDefault(); setInputValue(opt); setIsOpen(false); setIsTyping(false); if (onChange) onChange({ target: { name, value: opt } }); }}>
+                                    {opt}
+                                </li>
+                            )) : (
+                                <li className="px-4 py-2.5 text-sm text-gray-500 italic bg-gray-50" onMouseDown={(e) => { e.preventDefault(); setIsOpen(false); }}>
+                                    Rincian manual digunakan: <span className="font-semibold text-gray-700">{inputValue}</span>
+                                </li>
+                            )}
+                        </ul>
+                    )}
+                </div>
+            );
+        };
+
+        const formatRupiah = (number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+
+        // ============================================================
+        // PERUBAHAN POIN 3: PaguInfoCard yang lebih akurat
+        // Sekarang menghitung sisa pagu dengan benar:
+        // - Mengecek semua SPJ yang sudah diajukan (semua status kecuali yg sudah dibatalkan)
+        // - Menampilkan sisa pagu per TW dengan jelas
+        // - Memperingatkan kalau pagu TW sudah habis
+        // ============================================================
+        const PaguInfoCard = ({ sekolah, rincian, triwulan, nominalInput, dataSpj }) => {
+            if (!sekolah || !rincian || !triwulan) return null;
+            
+            // Normalisasi triwulan jadi array untuk support multi-TW
+            const twArr = Array.isArray(triwulan) ? triwulan : (triwulan ? [triwulan] : []);
+            if (twArr.length === 0) return null;
+            
+            const paguInfo = getPaguInfo(sekolah, rincian, twArr);
+            if (!paguInfo) return (
+                <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500 italic flex items-center gap-2">
+                    <IconInfo size={15} className="text-gray-400 flex-shrink-0"/>
+                    <span>Data pagu RAK tidak ditemukan untuk kombinasi ini.</span>
+                </div>
+            );
+            
+            const kodeBelanja = rincian.split(' ')[0];
+            const myNum = sekolah ? sekolah.match(/\b(\d+)\b/)?.[1] : null;
+            
+            // Hitung semua SPJ yang sudah diajukan untuk sekolah+rincian+triwulan ini
+            // Status yang "mengambil" pagu: Menunggu Verifikasi, Siap Cair, Revisi, Ditunda
+            // (semua status KECUALI yang sudah benar-benar dibatalkan/dihapus)
+            const sudahDiajukanPerTw = {};
+            let totalSudahDiajukan = 0;
+            
+            twArr.forEach(twStr => {
+                const spjUntukTw = dataSpj.filter(s => {
+                    const sNum = s.sekolah ? s.sekolah.match(/\b(\d+)\b/)?.[1] : null;
+                    const sKode = s.rincian ? s.rincian.split(' ')[0] : '';
+                    // Cek apakah triwulan SPJ ini termasuk dalam TW yang kita cek
+                    // SPJ bisa berisi "Triwulan 1 & Triwulan 2" dll
+                    const spjTw = s.triwulan || '';
+                    const twMatch = spjTw === twStr || spjTw.includes(twStr);
+                    return sNum === myNum 
+                        && sKode === kodeBelanja 
+                        && twMatch
+                        && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair' || s.status === 'Revisi' || s.status === 'Ditunda');
+                });
+                const nominal = spjUntukTw.reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+                sudahDiajukanPerTw[twStr] = nominal;
+                totalSudahDiajukan += nominal;
+            });
+            
+            // Hitung sisa pagu untuk SEMUA TW yang dipilih
+            const sisaPaguTw = paguInfo.triwulan - totalSudahDiajukan;
+            const sisaPaguTotal = paguInfo.total - totalSudahDiajukan;
+            
+            const inputNominal = Number(nominalInput) || 0;
+            const twHasNoPagu = paguInfo.triwulan === 0;
+            const isOverBudget = inputNominal > 0 && (inputNominal > sisaPaguTw || inputNominal > sisaPaguTotal);
+            const isPaguHabis = !twHasNoPagu && sisaPaguTw <= 0;
+            
+            const cardBg   = isOverBudget || isPaguHabis ? 'bg-red-50 border-red-200' : twHasNoPagu ? 'bg-amber-50 border-amber-200' : 'bg-green-50 border-green-200';
+            const headBg   = isOverBudget || isPaguHabis ? 'bg-red-100 border-red-200' : twHasNoPagu ? 'bg-amber-100 border-amber-200' : 'bg-green-100 border-green-200';
+            const headText = isOverBudget || isPaguHabis ? 'text-red-700' : twHasNoPagu ? 'text-amber-700' : 'text-green-700';
+            const HeadIcon = isOverBudget || isPaguHabis ? IconWarning : IconInfo;
+            const headIconColor = isOverBudget || isPaguHabis ? 'text-red-600' : twHasNoPagu ? 'text-amber-600' : 'text-green-600';
+            const namaSekolah = sekolah.replace('UPT SDN ', 'SDN ').replace(' GRESIK', '');
+            const twLabel = twArr.join(' & ');
+            
+            return (
+                <div className={`border rounded-xl overflow-hidden shadow-sm ${cardBg}`}>
+                    <div className={`px-4 py-2.5 flex items-center gap-2 border-b ${headBg}`}>
+                        <HeadIcon size={15} className={`${headIconColor} flex-shrink-0`}/>
+                        <span className={`text-sm font-bold ${headText}`}>Info Pagu ({namaSekolah}) — {twLabel}</span>
+                    </div>
+                    <div className="px-4 py-3">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                            <span className="text-gray-500">Pagu Total (Setahun)</span>
+                            <span className="font-semibold text-gray-800 text-right">{formatRupiah(paguInfo.total)}</span>
+                            
+                            <span className="text-gray-500">Pagu {twLabel}</span>
+                            <span className={`font-semibold text-right ${twHasNoPagu ? 'text-amber-600 italic text-xs' : 'text-gray-800'}`}>
+                                {twHasNoPagu ? 'Tidak dianggarkan di TW ini' : formatRupiah(paguInfo.triwulan)}
+                            </span>
+                            
+                            {/* Tampilkan detail per TW kalau ada beberapa TW dipilih */}
+                            {twArr.length > 1 && twArr.map(tw => {
+                                const twSingle = getPaguInfo(sekolah, rincian, [tw]);
+                                const diajukanTw = sudahDiajukanPerTw[tw] || 0;
+                                return twSingle && twSingle.triwulan > 0 ? (
+                                    <React.Fragment key={tw}>
+                                        <span className="text-gray-400 text-xs pl-3">↳ {tw}</span>
+                                        <span className="text-gray-600 text-xs text-right">{formatRupiah(twSingle.triwulan)}{diajukanTw > 0 && <span className="text-orange-500"> (diajukan {formatRupiah(diajukanTw)})</span>}</span>
+                                    </React.Fragment>
+                                ) : null;
+                            })}
+                            
+                            <span className="text-gray-500">SPJ Sudah Diajukan</span>
+                            <span className={`font-semibold text-right ${totalSudahDiajukan > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                {totalSudahDiajukan > 0 ? formatRupiah(totalSudahDiajukan) : '—'}
+                            </span>
+                            
+                            <div className="col-span-2 border-t border-dashed border-gray-300 my-0.5"></div>
+                            
+                            <span className="text-gray-700 font-medium">Sisa Pagu {twLabel}</span>
+                            <span className={`font-bold text-right text-base ${twHasNoPagu ? 'text-amber-600' : isPaguHabis ? 'text-red-600' : sisaPaguTw <= 0 ? 'text-red-600' : 'text-green-700'}`}>
+                                {twHasNoPagu ? '—' : isPaguHabis ? 'PAGU HABIS ✗' : formatRupiah(Math.max(0, sisaPaguTw))}
+                                {!twHasNoPagu && !isPaguHabis && sisaPaguTw > 0 && <span className="text-green-500 ml-1">✓</span>}
+                            </span>
+                            
+                            <span className="text-gray-700 font-medium">Sisa Pagu Total</span>
+                            <span className={`font-bold text-right ${sisaPaguTotal <= 0 ? 'text-red-600' : 'text-blue-700'}`}>
+                                {formatRupiah(Math.max(0, sisaPaguTotal))}
+                            </span>
+                        </div>
+                        
+                        {isPaguHabis && (
+                            <div className="mt-2.5 p-2.5 bg-red-100 rounded-lg text-red-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span><strong>Pagu {twLabel} sudah habis!</strong> SPJ untuk TW ini tidak bisa diajukan lagi. Sudah terpakai: {formatRupiah(totalSudahDiajukan)} dari {formatRupiah(paguInfo.triwulan)}.</span>
+                            </div>
+                        )}
+                        {isOverBudget && inputNominal > 0 && !isPaguHabis && (
+                            <div className="mt-2.5 p-2.5 bg-red-100 rounded-lg text-red-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Nominal yang diinput ({formatRupiah(inputNominal)}) <strong>melebihi sisa pagu!</strong> Sisa pagu hanya {formatRupiah(Math.max(0, sisaPaguTw))}.</span>
+                            </div>
+                        )}
+                        {twHasNoPagu && (
+                            <div className="mt-2.5 p-2.5 bg-amber-100 rounded-lg text-amber-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Rincian ini <strong>tidak dianggarkan</strong> pada {twLabel}. Pastikan triwulan sudah benar.</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const PaguInfoCardEnhanced = ({ sekolah, rincian, triwulan, nominalInput, dataSpj }) => {
+            if (!sekolah || !rincian || !triwulan) return null;
+            
+            const twArr = Array.isArray(triwulan) ? triwulan : (triwulan ? [triwulan] : []);
+            if (twArr.length === 0) return null;
+            
+            const paguInfo = getPaguInfoEnhanced(sekolah, rincian, twArr);
+            if (!paguInfo) {
+                const num = getSchoolNumber(sekolah);
+                const isInRakData = num && RAK_DATA[num];
+                if (num && !isInRakData && window.rakDataGlobal.length === 0) {
+                    return (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-600 italic flex items-center gap-2">
+                            <IconInfo size={15} className="text-blue-400 flex-shrink-0"/>
+                            <span>Info pagu akan tersedia setelah tab <strong>RAK BOS 2026</strong> dibuka minimal sekali untuk memuat data.</span>
+                        </div>
+                    );
+                }
+                return (
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-500 italic flex items-center gap-2">
+                        <IconInfo size={15} className="text-gray-400 flex-shrink-0"/>
+                        <span>Data pagu RAK tidak ditemukan untuk kombinasi ini.</span>
+                    </div>
+                );
+            }
+            
+            const kodeBelanja = rincian.split(' ')[0];
+            const myNum = sekolah ? sekolah.match(/\b(\d+)\b/)?.[1] : null;
+            
+            const sudahDiajukanPerTw = {};
+            let totalSudahDiajukan = 0;
+            
+            twArr.forEach(twStr => {
+                const spjUntukTw = dataSpj.filter(s => {
+                    const sNum = s.sekolah ? s.sekolah.match(/\b(\d+)\b/)?.[1] : null;
+                    const sKode = s.rincian ? s.rincian.split(' ')[0] : '';
+                    const spjTw = s.triwulan || '';
+                    const twMatch = spjTw === twStr || spjTw.includes(twStr);
+                    return sNum === myNum 
+                        && sKode === kodeBelanja 
+                        && twMatch
+                        && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair' || s.status === 'Revisi' || s.status === 'Ditunda');
+                });
+                const nominal = spjUntukTw.reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+                sudahDiajukanPerTw[twStr] = nominal;
+                totalSudahDiajukan += nominal;
+            });
+            
+            const sisaPaguTw = paguInfo.triwulan - totalSudahDiajukan;
+            const sisaPaguTotal = paguInfo.total - totalSudahDiajukan;
+            const inputNominal = Number(nominalInput) || 0;
+            const twHasNoPagu = paguInfo.triwulan === 0;
+            const isOverBudget = inputNominal > 0 && (inputNominal > sisaPaguTw || inputNominal > sisaPaguTotal);
+            const isPaguHabis = !twHasNoPagu && sisaPaguTw <= 0;
+            
+            const cardBg   = isOverBudget || isPaguHabis ? 'bg-red-50 border-red-200' : twHasNoPagu ? 'bg-amber-50 border-amber-200' : 'bg-green-50 border-green-200';
+            const headBg   = isOverBudget || isPaguHabis ? 'bg-red-100 border-red-200' : twHasNoPagu ? 'bg-amber-100 border-amber-200' : 'bg-green-100 border-green-200';
+            const headText = isOverBudget || isPaguHabis ? 'text-red-700' : twHasNoPagu ? 'text-amber-700' : 'text-green-700';
+            const HeadIcon = isOverBudget || isPaguHabis ? IconWarning : IconInfo;
+            const headIconColor = isOverBudget || isPaguHabis ? 'text-red-600' : twHasNoPagu ? 'text-amber-600' : 'text-green-600';
+            const namaSekolah = sekolah.replace('UPT SDN ', 'SDN ').replace(' GRESIK', '');
+            const twLabel = twArr.join(' & ');
+            
+            return (
+                <div className={`border rounded-xl overflow-hidden shadow-sm ${cardBg}`}>
+                    <div className={`px-4 py-2.5 flex items-center gap-2 border-b ${headBg}`}>
+                        <HeadIcon size={15} className={`${headIconColor} flex-shrink-0`}/>
+                        <span className={`text-sm font-bold ${headText}`}>Info Pagu ({namaSekolah}) — {twLabel}</span>
+                    </div>
+                    <div className="px-4 py-3">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                            <span className="text-gray-500">Pagu Total (Setahun)</span>
+                            <span className="font-semibold text-gray-800 text-right">{formatRupiah(paguInfo.total)}</span>
+                            
+                            <span className="text-gray-500">Pagu {twLabel}</span>
+                            <span className={`font-semibold text-right ${twHasNoPagu ? 'text-amber-600 italic text-xs' : 'text-gray-800'}`}>
+                                {twHasNoPagu ? 'Tidak dianggarkan di TW ini' : formatRupiah(paguInfo.triwulan)}
+                            </span>
+                            
+                            <span className="text-gray-500">SPJ Sudah Diajukan</span>
+                            <span className={`font-semibold text-right ${totalSudahDiajukan > 0 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                {totalSudahDiajukan > 0 ? formatRupiah(totalSudahDiajukan) : '—'}
+                            </span>
+                            
+                            <div className="col-span-2 border-t border-dashed border-gray-300 my-0.5"></div>
+                            
+                            <span className="text-gray-700 font-medium">Sisa Pagu {twLabel}</span>
+                            <span className={`font-bold text-right text-base ${twHasNoPagu ? 'text-amber-600' : isPaguHabis ? 'text-red-600' : sisaPaguTw <= 0 ? 'text-red-600' : 'text-green-700'}`}>
+                                {twHasNoPagu ? '—' : isPaguHabis ? 'PAGU HABIS ✗' : formatRupiah(Math.max(0, sisaPaguTw))}
+                                {!twHasNoPagu && !isPaguHabis && sisaPaguTw > 0 && <span className="text-green-500 ml-1">✓</span>}
+                            </span>
+                            
+                            <span className="text-gray-700 font-medium">Sisa Pagu Total</span>
+                            <span className={`font-bold text-right ${sisaPaguTotal <= 0 ? 'text-red-600' : 'text-blue-700'}`}>
+                                {formatRupiah(Math.max(0, sisaPaguTotal))}
+                            </span>
+                        </div>
+                        
+                        {isPaguHabis && (
+                            <div className="mt-2.5 p-2.5 bg-red-100 rounded-lg text-red-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span><strong>Pagu {twLabel} sudah habis!</strong> SPJ untuk TW ini tidak bisa diajukan lagi. Sudah terpakai: {formatRupiah(totalSudahDiajukan)} dari {formatRupiah(paguInfo.triwulan)}.</span>
+                            </div>
+                        )}
+                        {isOverBudget && inputNominal > 0 && !isPaguHabis && (
+                            <div className="mt-2.5 p-2.5 bg-red-100 rounded-lg text-red-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Nominal yang diinput ({formatRupiah(inputNominal)}) <strong>melebihi sisa pagu!</strong> Sisa pagu hanya {formatRupiah(Math.max(0, sisaPaguTw))}.</span>
+                            </div>
+                        )}
+                        {twHasNoPagu && (
+                            <div className="mt-2.5 p-2.5 bg-amber-100 rounded-lg text-amber-700 text-xs font-medium flex items-start gap-1.5">
+                                <IconWarning size={13} className="flex-shrink-0 mt-0.5"/>
+                                <span>Rincian ini <strong>tidak dianggarkan</strong> pada {twLabel}. Pastikan triwulan sudah benar.</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const initialData = [];
+
+        function App() {
+          const [activeTab, setActiveTab] = useState('dashboard');
+          const [sidebarOpen, setSidebarOpen] = useState(true);
+          const [dataSpj, setDataSpj] = useState(initialData);
+          const [isLoading, setIsLoading] = useState(false);
+          const [addForm, setAddForm] = useState({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: [] });
+          const [isModalOpen, setIsModalOpen] = useState(false);
+          const [selectedSpj, setSelectedSpj] = useState(null);
+          const [verdict, setVerdict] = useState('Siap Cair');
+          const [notes, setNotes] = useState('');
+          const [editingRiwayatIdx, setEditingRiwayatIdx] = useState(null);
+          const [editingRiwayatText, setEditingRiwayatText] = useState('');
+          const [checkedRiwayat, setCheckedRiwayat] = useState({});
+          const [localRiwayat, setLocalRiwayat] = useState([]);
+          const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+          const [editingSpj, setEditingSpj] = useState(null);
+          const [aksesPic, setAksesPic] = useState('Semua');
+          
+          // ============================================================
+          // PERUBAHAN POIN 1: Filter TIDAK direset saat ganti tab
+          // State filter dipindah ke luar useEffect reset
+          // ============================================================
+          const [searchQuery, setSearchQuery] = useState('');
+          const [filterTriwulan, setFilterTriwulan] = useState('Semua');
+          const [filterKecamatan, setFilterKecamatan] = useState('Semua');
+          const [filterPic, setFilterPic] = useState('Semua');
+          const [sortOrder, setSortOrder] = useState('asc');
+
+          const [rakData, setRakData] = useState([]);
+          const [rakLoading, setRakLoading] = useState(false);
+          const [rakLoaded, setRakLoaded] = useState(false);
+          const [rakIsLocal, setRakIsLocal] = useState(false);
+          const [rakSearch, setRakSearch] = useState('');
+          const [rakFilterKec, setRakFilterKec] = useState('Semua Kecamatan');
+          const [rakFilterTw, setRakFilterTw] = useState('Semua Triwulan');
+          const [rakDetailSekolah, setRakDetailSekolah] = useState(null);
+          const [rakDetailOpen, setRakDetailOpen] = useState(false);
+
+          const [isSyncing, setIsSyncing] = useState(true);
+
+          useEffect(() => {
+            const unsubscribe = db.collection("spj_bos_data")
+              .orderBy("tanggal", "desc")
+              .onSnapshot(
+                (querySnapshot) => {
+                  const items = [];
+                  querySnapshot.forEach((doc) => {
+                    items.push({ ...doc.data(), _docId: doc.id });
+                  });
+                  setDataSpj(items);
+                  setIsSyncing(false);
+                },
+                (error) => {
+                  console.error("Firestore listener error:", error);
+                  setIsSyncing(false);
+                }
+              );
+            return () => unsubscribe();
+          }, []);
+
+          useEffect(() => {
+            if (activeTab === 'rakBosda' && !rakLoaded) {
+              fetchRakData();
+            }
+          }, [activeTab]);
+
+          useEffect(() => {
+            if (rakData && rakData.length > 0) {
+              window.rakDataGlobal = rakData;
+            }
+          }, [rakData]);
+
+          // ============================================================
+          // PERUBAHAN POIN 1: useEffect reset filter DIHAPUS
+          // Filter sekarang TETAP saat ganti tab
+          // ============================================================
+          // (tidak ada useEffect yang mereset filter di sini)
+
+          const parseNominal = (val) => {
+            if (!val || val === '-' || val === '') return 0;
+            const cleaned = String(val).replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+            return Math.round(parseFloat(cleaned) || 0);
+          };
+
+          // Fungsi fallback: konversi RAK_DATA hardcode ke format schoolArr
+          const buildRakFromLocalData = () => {
+            const NAMA_RINCIAN = {
+              '5.1.02.01.01.0002': 'Belanja Bahan-Bahan Kimia',
+              '5.1.02.01.01.0012': 'Belanja Bahan-Bahan Lainnya',
+              '5.1.02.01.01.0024': 'Belanja Alat Tulis Kantor',
+              '5.1.02.01.01.0025': 'Belanja Kertas dan Cover',
+              '5.1.02.01.01.0026': 'Belanja Bahan Cetak dan Penggandaan',
+              '5.1.02.01.01.0027': 'Belanja Benda Pos',
+              '5.1.02.01.01.0029': 'Belanja Bahan Komputer',
+              '5.1.02.01.01.0030': 'Belanja Perabot Kantor',
+              '5.1.02.01.01.0031': 'Belanja Alat Listrik',
+              '5.1.02.01.01.0034': 'Belanja Perlengkapan Pendukung Olahraga',
+              '5.1.02.01.01.0037': 'Belanja Obat-Obatan',
+              '5.1.02.01.01.0039': 'Belanja Seragam (Diserahkan)',
+            };
+            const getKec = (no) => {
+              if (no >= 1 && no <= 15) return 'Gresik';
+              if (no >= 16 && no <= 35) return 'Kebomas';
+              if (no >= 36 && no <= 51) return 'Manyar';
+              if (no >= 52 && no <= 76) return 'Cerme';
+              if (no >= 77 && no <= 92) return 'Duduksampeyan';
+              if (no >= 93 && no <= 117) return 'Benjeng';
+              if (no >= 118 && no <= 143) return 'Balongpanggang';
+              if (no >= 144 && no <= 169) return 'Driyorejo';
+              if (no >= 170 && no <= 192) return 'Wringinanom';
+              if (no >= 193 && no <= 213) return 'Kedamean';
+              if (no >= 214 && no <= 239) return 'Menganti';
+              if (no >= 240 && no <= 258) return 'Bungah';
+              if (no >= 259 && no <= 272) return 'Sidayu';
+              if (no >= 273 && no <= 292) return 'Dukun';
+              if (no >= 293 && no <= 308) return 'Ujungpangkah';
+              if (no >= 309 && no <= 324) return 'Panceng';
+              if (no >= 325 && no <= 360) return 'Sangkapura';
+              if (no >= 361 && no <= 389) return 'Tambak';
+              return 'Lainnya';
+            };
+            const schoolArr = [];
+            Object.keys(RAK_DATA).forEach(noStr => {
+              const no = parseInt(noStr);
+              const schoolRincian = RAK_DATA[noStr];
+              const rincianArr = Object.keys(schoolRincian).map(kode => ({
+                kode,
+                nama: NAMA_RINCIAN[kode] || kode,
+                namaAsli: NAMA_RINCIAN[kode] || kode,
+                paguTotal: schoolRincian[kode].t || 0,
+                tw1: schoolRincian[kode]['1'] || 0,
+                tw2: schoolRincian[kode]['2'] || 0,
+                tw3: schoolRincian[kode]['3'] || 0,
+                tw4: schoolRincian[kode]['4'] || 0,
+                jan: 0, feb: 0, mar: schoolRincian[kode]['1'] || 0,
+                apr: 0, mei: 0, jun: schoolRincian[kode]['2'] || 0,
+                jul: 0, agu: 0, sep: schoolRincian[kode]['3'] || 0,
+                okt: 0, nov: 0, des: schoolRincian[kode]['4'] || 0,
+              }));
+              const paguTotal = rincianArr.reduce((a, r) => a + r.paguTotal, 0);
+              schoolArr.push({
+                no, kode: '', namaAsli: `UPT SD NEGERI ${no}`,
+                namaDisplay: `SDN ${no} GRESIK`,
+                namaUpt: `UPT SDN ${no} GRESIK`,
+                kecamatan: getKec(no),
+                paguTotal,
+                tw1: rincianArr.reduce((a, r) => a + r.tw1, 0),
+                tw2: rincianArr.reduce((a, r) => a + r.tw2, 0),
+                tw3: rincianArr.reduce((a, r) => a + r.tw3, 0),
+                tw4: rincianArr.reduce((a, r) => a + r.tw4, 0),
+                rincian: rincianArr,
+              });
+            });
+            return schoolArr.sort((a, b) => a.no - b.no);
+          };
+
+          const fetchRakData = async () => {
+            setRakLoading(true);
+            try {
+              const response = await fetch('https://api.sheetbest.com/sheets/cfa7def0-feb9-4828-bb0f-e237c95d4dc4');
+              // Validasi status HTTP sebelum parse JSON
+              if (!response.ok) {
+                throw new Error(`Server error ${response.status}: ${response.statusText || 'Layanan SheetBest tidak tersedia'}`);
+              }
+              const rawData = await response.json();
+              // Validasi bahwa response adalah Array
+              if (!Array.isArray(rawData)) {
+                throw new Error('Format data tidak valid dari server (bukan array). SheetBest mungkin kena limit atau expired.');
+              }
+              const schoolMap = {};
+              let currentSchool = null;
+              rawData.forEach(row => {
+                const level = row['0'] || '';
+                const kode = row['RENCANA ANGGARAN KAS TAHUN 2026'] || '';
+                const nama = row['2'] || '';
+                const pagu = row['3'] || '';
+                const jan = row['4']; const feb = row['5']; const mar = row['6'];
+                const apr = row['7']; const mei = row['8']; const jun = row['9'];
+                const jul = row['10']; const agu = row['11']; const sep = row['12'];
+                const okt = row['13']; const nov = row['14']; const des = row['15'];
+                if (level === '1. SUB UNIT') {
+                  const matchNum = kode.match(/\.(\d{4})$/);
+                  const schoolNum = matchNum ? parseInt(matchNum[1]) : null;
+                  const namaMatch = nama.match(/UPT SD NEGERI (\d+)/i);
+                  const schoolNo = namaMatch ? parseInt(namaMatch[1]) : schoolNum;
+                  let kecamatan = 'Lainnya';
+                  const sNo = schoolNo;
+                  if (sNo >= 1 && sNo <= 15) kecamatan = 'Gresik';
+                  else if (sNo >= 16 && sNo <= 35) kecamatan = 'Kebomas';
+                  else if (sNo >= 36 && sNo <= 51) kecamatan = 'Manyar';
+                  else if (sNo >= 52 && sNo <= 76) kecamatan = 'Cerme';
+                  else if (sNo >= 77 && sNo <= 92) kecamatan = 'Duduksampeyan';
+                  else if (sNo >= 93 && sNo <= 117) kecamatan = 'Benjeng';
+                  else if (sNo >= 118 && sNo <= 143) kecamatan = 'Balongpanggang';
+                  else if (sNo >= 144 && sNo <= 169) kecamatan = 'Driyorejo';
+                  else if (sNo >= 170 && sNo <= 192) kecamatan = 'Wringinanom';
+                  else if (sNo >= 193 && sNo <= 213) kecamatan = 'Kedamean';
+                  else if (sNo >= 214 && sNo <= 239) kecamatan = 'Menganti';
+                  else if (sNo >= 240 && sNo <= 258) kecamatan = 'Bungah';
+                  else if (sNo >= 259 && sNo <= 272) kecamatan = 'Sidayu';
+                  else if (sNo >= 273 && sNo <= 292) kecamatan = 'Dukun';
+                  else if (sNo >= 293 && sNo <= 308) kecamatan = 'Ujungpangkah';
+                  else if (sNo >= 309 && sNo <= 324) kecamatan = 'Panceng';
+                  else if (sNo >= 325 && sNo <= 360) kecamatan = 'Sangkapura';
+                  else if (sNo >= 361 && sNo <= 389) kecamatan = 'Tambak';
+                  currentSchool = {
+                    no: sNo, kode: kode, namaAsli: nama,
+                    namaDisplay: `SDN ${sNo} GRESIK`, namaUpt: `UPT SDN ${sNo} GRESIK`,
+                    kecamatan: kecamatan,
+                    paguTotal: parseNominal(pagu),
+                    tw1: parseNominal(jan) + parseNominal(feb) + parseNominal(mar),
+                    tw2: parseNominal(apr) + parseNominal(mei) + parseNominal(jun),
+                    tw3: parseNominal(jul) + parseNominal(agu) + parseNominal(sep),
+                    tw4: parseNominal(okt) + parseNominal(nov) + parseNominal(des),
+                    rincian: []
+                  };
+                  schoolMap[sNo] = currentSchool;
+                } else if (level === '5. BELANJA' && currentSchool) {
+                  const kodeMatch = kode.match(/5\.1\.02\.01\.001\.(\d+)$/);
+                  const kodeBelanja = kodeMatch ? `5.1.02.01.01.${kodeMatch[1].replace(/^0+/, '').padStart(4,'0')}` : kode;
+                  const kodeShort = kodeMatch ? kodeMatch[1].replace(/^0+/, '') : '';
+                  const namaShort = nama.replace('Belanja Alat/Bahan untuk Kegiatan Kantor-', '')
+                                        .replace('Belanja Alat/Bahan untuk Kegiatan Kantor- ', '')
+                                        .replace('Belanja Obat-Obatan-Obat', 'Belanja Obat-Obatan')
+                                        .replace('Belanja Barang untuk Dijual/Diserahkan kepada Masyarakat', 'Belanja Seragam (Diserahkan)')
+                                        .trim();
+                  currentSchool.rincian.push({
+                    kode: kodeBelanja, kodeShort: kodeShort, nama: namaShort, namaAsli: nama,
+                    paguTotal: parseNominal(pagu),
+                    jan: parseNominal(jan), feb: parseNominal(feb), mar: parseNominal(mar),
+                    apr: parseNominal(apr), mei: parseNominal(mei), jun: parseNominal(jun),
+                    jul: parseNominal(jul), agu: parseNominal(agu), sep: parseNominal(sep),
+                    okt: parseNominal(okt), nov: parseNominal(nov), des: parseNominal(des),
+                    tw1: parseNominal(jan) + parseNominal(feb) + parseNominal(mar),
+                    tw2: parseNominal(apr) + parseNominal(mei) + parseNominal(jun),
+                    tw3: parseNominal(jul) + parseNominal(agu) + parseNominal(sep),
+                    tw4: parseNominal(okt) + parseNominal(nov) + parseNominal(des),
+                  });
+                }
+              });
+              const schoolArr = Object.values(schoolMap).sort((a, b) => a.no - b.no);
+              setRakData(schoolArr);
+              setRakLoaded(true);
+            } catch (err) {
+              console.error('Error fetching RAK data:', err);
+              // Fallback: gunakan RAK_DATA lokal yang sudah hardcode di kode
+              const localData = buildRakFromLocalData();
+              if (localData.length > 0) {
+                setRakData(localData);
+                setRakLoaded(true);
+                setRakIsLocal(true);
+                console.warn('Menggunakan data RAK lokal (SDN 1-15) karena API gagal:', err.message);
+              } else {
+                alert('Gagal memuat data RAK: ' + err.message + '\n\nSilakan cek koneksi internet atau hubungi admin untuk memperbarui SheetBest.');
+              }
+            }
+            setRakLoading(false);
+          };
+
+          // ============================================================
+          // PERUBAHAN POIN 2: Stats dipisah antara revisi dan ditunda
+          // ============================================================
+          const stats = {
+            total: dataSpj.length,
+            menunggu: dataSpj.filter(d => d.status === 'Menunggu Verifikasi').length,
+            siapCair: dataSpj.filter(d => d.status === 'Siap Cair').length,
+            revisi: dataSpj.filter(d => d.status === 'Revisi').length,
+            ditunda: dataSpj.filter(d => d.status === 'Ditunda').length,
+          };
+
+          const handleTriwulanChange = (nilai) => {
+            setAddForm(prev => {
+              const sudahAda = prev.triwulan.includes(nilai);
+              const baru = sudahAda
+                ? prev.triwulan.filter(t => t !== nilai)
+                : [...prev.triwulan, nilai].sort();
+              return { ...prev, triwulan: baru };
+            });
+          };
+
+          const handleFormChange = (e) => {
+            const { name, value } = e.target;
+            let newForm = { ...addForm, [name]: value };
+            if (name === 'kecamatan') newForm.sekolah = '';
+            setAddForm(newForm);
+          };
+
+          const generateNewId = (existingData) => {
+            const nums = existingData
+              .map(d => {
+                const m = String(d.id || '').match(/SPJ-(\d+)$/);
+                return m ? parseInt(m[1]) : 0;
+              })
+              .filter(n => !isNaN(n) && n > 0 && n < 100000);
+            const maxNum = nums.length > 0 ? Math.max(...nums) : 0;
+            return `SPJ-${maxNum + 1}`;
+          };
+
+          const handleAddNewSpj = async (e) => {
+            e.preventDefault();
+            setIsLoading(true);
+            if (addForm.triwulan.length === 0) {
+              alert('Pilih minimal 1 triwulan!');
+              setIsLoading(false);
+              return;
+            }
+            const triwulanText = addForm.triwulan.join(' & ');
+            const tanggalHariIni = new Date().toISOString().split('T')[0];
+            const newId = generateNewId(dataSpj);
+            const newSpj = {
+              id: newId,
+              kecamatan: addForm.kecamatan, sekolah: addForm.sekolah,
+              pic: KECAMATAN_PIC[addForm.kecamatan],
+              tanggal: tanggalHariIni,
+              triwulan: triwulanText, rincian: addForm.rincian,
+              nominal: Number(addForm.nominal),
+              status: 'Menunggu Verifikasi',
+              catatan: '-',
+              riwayatRevisi: [
+                {
+                  tanggal: tanggalHariIni,
+                  status: 'Masuk',
+                  catatan: `SPJ diterima — ${addForm.rincian} — ${triwulanText}`
+                }
+              ]
+            };
+            try {
+              await db.collection("spj_bos_data").add(newSpj);
+              setAddForm({ kecamatan: '', sekolah: '', rincian: '', nominal: '', triwulan: [] });
+              alert('Data berhasil disimpan ke database!');
+              setActiveTab('verifikasi');
+              // Sinkron ke SheetBest (opsional, tidak blok kalau gagal)
+              try {
+                await fetch('https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSpj),
+                });
+              } catch (sheetErr) {
+                console.warn('SheetBest sync gagal (data sudah tersimpan di Firestore):', sheetErr.message);
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              alert('Terjadi kesalahan saat menyimpan data: ' + error.message);
+            } finally { setIsLoading(false); }
+          };
+
+          const openVerifyModal = (spj) => { setSelectedSpj(spj); setVerdict('Siap Cair'); setNotes(''); setLocalRiwayat(spj.riwayatRevisi ? [...spj.riwayatRevisi] : []); setCheckedRiwayat({}); setEditingRiwayatIdx(null); setEditingRiwayatText(''); setIsModalOpen(true); };
+
+          const submitVerification = async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const riwayatBaru = notes.trim()
+              ? [...localRiwayat, { tanggal: today, status: verdict, catatan: notes }]
+              : localRiwayat;
+            const updatePayload = { status: verdict, catatan: verdict === 'Siap Cair' ? '' : notes, riwayatRevisi: riwayatBaru, tanggal: today };
+            const updatedData = dataSpj.map(spj => spj.id === selectedSpj.id ? { ...spj, ...updatePayload } : spj);
+            setDataSpj(updatedData);
+            setIsModalOpen(false);
+            try {
+              if (selectedSpj._docId) {
+                await db.collection("spj_bos_data").doc(selectedSpj._docId).update(updatePayload);
+              }
+              alert('Status berhasil diperbarui!');
+              // Sinkron ke SheetBest (opsional)
+              try {
+                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${selectedSpj.id}`, {
+                  method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(updatePayload),
+                });
+              } catch (sheetErr) {
+                console.warn('SheetBest sync gagal (data sudah diupdate di Firestore):', sheetErr.message);
+              }
+            } catch (error) {
+              alert('Gagal update status: ' + error.message);
+            }
+          };
+
+          const handleDeleteSpj = async (id) => {
+            if (!window.confirm('Yakin ingin hapus ID: ' + id + '?')) return;
+            const spjToDelete = dataSpj.find(spj => spj.id === id);
+            try {
+              if (spjToDelete && spjToDelete._docId) {
+                await db.collection("spj_bos_data").doc(spjToDelete._docId).delete();
+              }
+              alert('Berhasil dihapus!');
+              // Sinkron hapus ke SheetBest (opsional)
+              try {
+                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${id}`, { method: 'DELETE' });
+              } catch (sheetErr) {
+                console.warn('SheetBest delete sync gagal (data sudah dihapus dari Firestore):', sheetErr.message);
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              alert('Terjadi kesalahan saat menghapus: ' + error.message);
+            }
+          };
+
+          const handleOpenEdit = (spj) => { setEditingSpj(spj); setIsEditModalOpen(true); };
+
+          const handleSaveEdit = async (e) => {
+            e.preventDefault();
+            setIsLoading(true);
+            if (!editingSpj || !editingSpj.id) { alert("Error: ID tidak ditemukan!"); setIsLoading(false); return; }
+            const formData = new FormData(e.target);
+            const updatedDataPayload = {
+              kecamatan: formData.get('kecamatan'), sekolah: formData.get('sekolah'),
+              triwulan: formData.get('triwulan'), nominal: Number(formData.get('nominal')),
+              rincian: formData.get('rincian'), pic: KECAMATAN_PIC[formData.get('kecamatan')]
+            };
+            try {
+              if (editingSpj._docId) {
+                await db.collection("spj_bos_data").doc(editingSpj._docId).update(updatedDataPayload);
+              }
+              alert('Berhasil diperbarui!');
+              setDataSpj(prev => prev.map(spj => spj.id === editingSpj.id ? { ...spj, ...updatedDataPayload } : spj));
+              setIsEditModalOpen(false); setEditingSpj(null);
+              // Sinkron ke SheetBest (opsional)
+              try {
+                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${editingSpj.id}`, {
+                  method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedDataPayload),
+                });
+              } catch (sheetErr) {
+                console.warn('SheetBest sync gagal (data sudah diupdate di Firestore):', sheetErr.message);
+              }
+            } catch (error) { console.error('Error:', error); alert('Terjadi kesalahan koneksi: ' + error.message); }
+            finally { setIsLoading(false); }
+          };
+
+          const downloadExcel = (dataToDownload) => {
+            if (dataToDownload.length === 0) { alert("Tidak ada data untuk diunduh."); return; }
+            const tableHTML = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><style>.num{mso-number-format:"#\\,\\#\\#0";text-align:right;}.text-center{text-align:center;}</style></head><body><table border="1" style="border-collapse:collapse;font-family:Arial,sans-serif;"><thead><tr style="background-color:#16a34a;color:white;font-weight:bold;"><th style="padding:8px;">NO</th><th style="padding:8px;">KECAMATAN</th><th style="padding:8px;">SEKOLAH</th><th style="padding:8px;">TRIWULAN</th><th style="padding:8px;">RINCIAN BELANJA</th><th style="padding:8px;">NOMINAL (Rp)</th></tr></thead><tbody>${dataToDownload.map((row,i)=>`<tr><td class="text-center" style="padding:5px;">${i+1}</td><td style="padding:5px;">${row.kecamatan}</td><td style="padding:5px;">${row.sekolah}</td><td class="text-center" style="padding:5px;">${row.triwulan}</td><td style="padding:5px;">${row.rincian}</td><td class="num" style="padding:5px;">${row.nominal}</td></tr>`).join('')}</tbody></table></body></html>`;
+            const blob = new Blob([tableHTML], { type: 'application/vnd.ms-excel' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url); link.setAttribute("download", `Rekap_SPJ_Siap_Cair_${new Date().toISOString().split('T')[0]}.xls`);
+            link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+          };
+
+          const renderDashboard = () => (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-gray-800">Ringkasan Alur SPJ</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                  <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><IconFileText size={24}/></div>
+                  <div><p className="text-sm text-gray-500">Total SPJ Masuk</p><p className="text-2xl font-bold">{stats.total}</p></div>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4 cursor-pointer hover:bg-gray-50" onClick={() => setActiveTab('verifikasi')}>
+                  <div className="p-3 bg-yellow-100 text-yellow-600 rounded-lg"><IconClock size={24}/></div>
+                  <div><p className="text-sm text-gray-500">Menunggu Verifikasi</p><p className="text-2xl font-bold">{stats.menunggu}</p></div>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4 cursor-pointer hover:bg-gray-50" onClick={() => setActiveTab('siapCair')}>
+                  <div className="p-3 bg-green-100 text-green-600 rounded-lg"><IconCheckCircle2 size={24}/></div>
+                  <div><p className="text-sm text-gray-500">Antrian Siap Cair</p><p className="text-2xl font-bold">{stats.siapCair}</p></div>
+                </div>
+                {/* PERUBAHAN POIN 2: Dashboard card dipisah antara Revisi & Ditunda */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4 cursor-pointer hover:bg-gray-50" onClick={() => setActiveTab('revisi')}>
+                  <div className="p-3 bg-red-100 text-red-600 rounded-lg"><IconRotateCcw size={24}/></div>
+                  <div><p className="text-sm text-gray-500">Revisi</p><p className="text-2xl font-bold">{stats.revisi}</p></div>
+                </div>
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center space-x-4 cursor-pointer hover:bg-gray-50" onClick={() => setActiveTab('ditunda')}>
+                  <div className="p-3 bg-orange-100 text-orange-600 rounded-lg"><IconPauseCircle size={24}/></div>
+                  <div><p className="text-sm text-gray-500">Ditunda</p><p className="text-2xl font-bold">{stats.ditunda}</p></div>
+                </div>
+              </div>
+            </div>
+          );
+
+          const renderPenerimaan = () => (
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl mx-auto">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <IconPlusCircle className="mr-2 text-blue-600" size={24}/> Form Penerimaan SPJ Baru
+                </h2>
+                <a href="https://docs.google.com/spreadsheets/d/1ADXv542J7mnQnfyIEc0ok5OYE5ZTHZzmSL-xX-dTgto/edit?usp=sharing"
+                  target="_blank" rel="noopener noreferrer"
+                  className="text-xs font-bold bg-purple-100 text-purple-700 px-3 py-2 rounded-lg hover:bg-purple-200 transition flex items-center shrink-0">
+                  <IconDownload size={14} className="mr-1"/> Database
+                </a>
+              </div>
+              <form onSubmit={handleAddNewSpj} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-sm font-medium text-gray-700">Kecamatan</label>
+                      {addForm.kecamatan && <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">PIC: {KECAMATAN_PIC[addForm.kecamatan]}</span>}
+                    </div>
+                    <select required name="kecamatan" value={addForm.kecamatan} onChange={handleFormChange} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                      <option value="">-- Pilih Kecamatan --</option>
+                      {KECAMATAN_LIST.map(kec => <option key={kec} value={kec}>{kec}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
+                    <select required name="sekolah" value={addForm.sekolah} onChange={handleFormChange} disabled={!addForm.kecamatan} className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100">
+                      <option value="">-- Pilih Sekolah --</option>
+                      {addForm.kecamatan && SEKOLAH_DATA[addForm.kecamatan]?.map(sek => <option key={sek} value={sek}>{sek}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="relative z-20">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Belanja Singkat</label>
+                  <CustomComboBox name="rincian" value={addForm.rincian} onChange={handleFormChange} options={RINCIAN_OPTIONS}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="Pilih rekening atau ketik bebas..." required/>
+                </div>
+                <div className="grid grid-cols-2 gap-4 relative z-10">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                    <input required name="nominal" value={addForm.nominal} onChange={handleFormChange} type="number" min="0"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="10000000"/>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Triwulan Pelaksanaan</label>
+                    <div className="border border-gray-300 rounded-lg p-3 space-y-2 bg-white">
+                      {[
+                        {val:'Triwulan 1', label:'TW 1 (Jan-Mar)'},
+                        {val:'Triwulan 2', label:'TW 2 (Apr-Jun)'},
+                        {val:'Triwulan 3', label:'TW 3 (Jul-Sep)'},
+                        {val:'Triwulan 4', label:'TW 4 (Okt-Des)'},
+                      ].map(tw => (
+                        <label key={tw.val} className="flex items-center gap-2 cursor-pointer hover:bg-blue-50 px-2 py-1 rounded">
+                          <input type="checkbox" checked={addForm.triwulan.includes(tw.val)}
+                            onChange={() => handleTriwulanChange(tw.val)}
+                            className="w-4 h-4 accent-blue-600"/>
+                          <span className={`text-sm font-medium ${addForm.triwulan.includes(tw.val) ? 'text-blue-700' : 'text-gray-700'}`}>
+                            {tw.label}
+                          </span>
+                          {addForm.triwulan.includes(tw.val) && <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">✓ Dipilih</span>}
+                        </label>
+                      ))}
+                      {addForm.triwulan.length === 0 && (
+                        <p className="text-xs text-red-400 italic px-2">* Pilih minimal 1 triwulan</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <PaguInfoCardEnhanced sekolah={addForm.sekolah} rincian={addForm.rincian} triwulan={addForm.triwulan} nominalInput={addForm.nominal} dataSpj={dataSpj}/>
+                <button type="submit" disabled={isLoading}
+                  className={`w-full font-bold py-3 rounded-lg mt-4 shadow-md transition flex items-center justify-center ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+                  {isLoading ? (
+                    <><svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>Sedang Menyimpan...</>
+                  ) : "Simpan & Antrekan Verifikasi"}
+                </button>
+              </form>
+            </div>
+          );
+
+          const TableTemplate = ({ data, showVerifyAction, requiresPicLock, currentPic }) => (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse bg-white rounded-xl shadow-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
+                    <th className="p-4 font-semibold">ID & Tgl Update</th>
+                    <th className="p-4 font-semibold">Instansi & Triwulan</th>
+                    <th className="p-4 font-semibold">Nominal & Rincian</th>
+                    <th className="p-4 font-semibold">Status</th>
+                    <th className="p-4 font-semibold text-right min-w-[180px]">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {data.length === 0 ? <tr><td colSpan={5} className="p-8 text-center text-gray-500">Tidak ada data.</td></tr> : data.map((spj) => (
+                    <tr key={spj.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                      <td className="p-4 font-medium text-gray-800">{spj.id}<br/><span className="text-xs text-gray-500 font-normal flex items-center mt-1"><IconClock size={12} className="mr-1"/>{spj.tanggal}</span></td>
+                      <td className="p-4 font-medium text-gray-800">{spj.sekolah}<br/><span className="text-xs text-gray-500 font-normal flex items-center mt-1"><IconMapPin size={12} className="mr-1"/> Kec. {spj.kecamatan} (PIC: {spj.pic}) • {spj.triwulan}</span></td>
+                      <td className="p-4 max-w-xs"><div className="font-bold text-blue-700">{formatRupiah(spj.nominal)}</div><div className="text-xs text-gray-500 truncate mt-1" title={spj.rincian}>{spj.rincian}</div></td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${spj.status === 'Siap Cair' ? 'bg-green-100 text-green-800' : spj.status === 'Revisi' ? 'bg-red-100 text-red-800' : spj.status === 'Ditunda' ? 'bg-orange-100 text-orange-800' : spj.status === 'Menunggu Verifikasi' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>{spj.status}</span>
+                        {spj.catatan && <div className="text-xs text-red-500 mt-1 max-w-[150px]">{spj.catatan}</div>}
+                        {spj.riwayatRevisi && spj.riwayatRevisi.length > 0 && (
+                          <div className="mt-1">
+                            {spj.riwayatRevisi.map((r, i) => (
+                              <div key={i} className={`text-xs rounded px-2 py-1 mt-0.5 max-w-[200px] border flex items-start gap-1 ${r.selesai ? 'bg-green-50 border-green-200 opacity-70' : 'bg-orange-50 border-orange-200'}`}>
+                                <span className="flex-shrink-0 mt-0.5">{r.selesai ? '✅' : r.status === 'Revisi' ? '🔴' : r.status === 'Ditunda' ? '🟠' : '🔵'}</span>
+                                <div className="min-w-0">
+                                  <span className={`font-bold ${r.selesai ? 'text-green-600 line-through' : r.status === 'Revisi' ? 'text-red-600' : r.status === 'Ditunda' ? 'text-orange-600' : 'text-blue-600'}`}>[{r.status} {r.tanggal}]</span>
+                                  <span className={`ml-1 ${r.selesai ? 'text-green-500 line-through' : 'text-gray-600'}`}>{r.catatan}</span>
+                                  {r.selesai && <span className="ml-1 text-green-600 font-bold text-xs">— Selesai</span>}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-4 text-right">
+                        {requiresPicLock && currentPic !== spj.pic ? (
+                          <span className="text-xs font-semibold text-gray-500 italic bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 inline-block text-center w-full">Aksi Terkunci</span>
+                        ) : (
+                          <div className="flex justify-end space-x-1.5 flex-wrap gap-y-1">
+                            {showVerifyAction && <button onClick={() => openVerifyModal(spj)} className="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconClipboardCheck size={14} className="mr-1 hidden sm:block"/> Koreksi</button>}
+                            <button onClick={() => handleOpenEdit(spj)} className="bg-amber-50 text-amber-600 hover:bg-amber-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconEdit size={14} className="mr-1 hidden sm:block"/> Edit</button>
+                            <button onClick={() => handleDeleteSpj(spj.id)} className="bg-red-50 text-red-600 hover:bg-red-100 px-2 py-1.5 rounded text-xs font-bold inline-flex items-center transition"><IconTrash size={14} className="mr-1 hidden sm:block"/> Hapus</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+
+          const renderRakBosda = () => {
+            const getSpjDiajukan = (uptName) => {
+              return dataSpj.filter(s => {
+                const noRak = uptName.match(/\b(\d+)\b/)?.[1];
+                const noSpj = s.sekolah?.match(/\b(\d+)\b/)?.[1];
+                return noRak && noSpj && noRak === noSpj &&
+                  (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair' || s.status === 'Revisi' || s.status === 'Ditunda');
+              }).reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+            };
+
+            const getSpjDiajukanPerRincian = (uptName, kodeRincian) => {
+              return dataSpj
+                .filter(s => {
+                  const sKode = s.rincian ? s.rincian.split(' ')[0] : '';
+                  const normSKode = sKode.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+                  const normKode = kodeRincian.replace('5.1.02.01.01.', '').replace(/^0+/, '');
+                  return s.sekolah === uptName
+                    && (normSKode === normKode || sKode === kodeRincian)
+                    && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair' || s.status === 'Revisi' || s.status === 'Ditunda');
+                })
+                .reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+            };
+
+            let filtered = rakData.filter(s => {
+              const matchSearch = rakSearch === '' ||
+                s.namaDisplay.toLowerCase().includes(rakSearch.toLowerCase()) ||
+                s.kecamatan.toLowerCase().includes(rakSearch.toLowerCase()) ||
+                String(s.no).includes(rakSearch);
+              const matchKec = rakFilterKec === 'Semua Kecamatan' || s.kecamatan === rakFilterKec;
+              let matchTw = true;
+              if (rakFilterTw !== 'Semua Triwulan') {
+                const twKey = rakFilterTw.replace('Triwulan ', 'tw');
+                matchTw = s[twKey] > 0;
+              }
+              return matchSearch && matchKec && matchTw;
+            });
+
+            const totalPagu = filtered.reduce((a, s) => a + s.paguTotal, 0);
+            const totalDiajukan = filtered.reduce((a, s) => a + getSpjDiajukan(s.namaUpt), 0);
+            const totalSisa = totalPagu - totalDiajukan;
+
+            const openDetail = (sekolah) => { setRakDetailSekolah(sekolah); setRakDetailOpen(true); };
+
+            return (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                      <IconTable size={24} className="text-green-600"/> RAK BOS 2026
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-0.5">Rencana Anggaran Kegiatan — {filtered.length} dari {rakData.length} sekolah</p>
+                  </div>
+                  <button onClick={() => { setRakLoaded(false); setRakIsLocal(false); fetchRakData(); }}
+                    className="text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition flex items-center gap-1">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                    Refresh
+                  </button>
+                </div>
+                {rakIsLocal && (
+                  <div className="bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 flex items-start gap-3">
+                    <IconWarning size={18} className="text-amber-500 flex-shrink-0 mt-0.5"/>
+                    <div>
+                      <p className="text-sm font-bold text-amber-700">⚠ Data RAK Lokal (Terbatas)</p>
+                      <p className="text-xs text-amber-600 mt-0.5">Server SheetBest tidak dapat dijangkau (kemungkinan expired/limit). Menampilkan data RAK untuk <strong>SDN 1–15 (Kec. Gresik)</strong> dari data lokal. Hubungi admin untuk memperbarui SheetBest, atau klik <strong>Refresh</strong> untuk mencoba ulang.</p>
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Total Pagu Ditampilkan</p>
+                    <p className="text-2xl font-bold text-gray-800 mt-1">{formatRupiah(totalPagu)}</p>
+                    <p className="text-xs text-gray-400 mt-1">{filtered.length} sekolah</p>
+                  </div>
+                  <div className="bg-orange-50 border border-orange-100 rounded-xl p-5 shadow-sm">
+                    <p className="text-xs text-orange-600 font-medium uppercase tracking-wide">Sudah Diajukan (SPJ)</p>
+                    <p className="text-2xl font-bold text-orange-600 mt-1">{formatRupiah(totalDiajukan)}</p>
+                    <p className="text-xs text-orange-400 mt-1">{totalPagu > 0 ? ((totalDiajukan/totalPagu)*100).toFixed(1) : 0}% dari total pagu</p>
+                  </div>
+                  <div className="bg-green-50 border border-green-100 rounded-xl p-5 shadow-sm">
+                    <p className="text-xs text-green-600 font-medium uppercase tracking-wide">Sisa Pagu</p>
+                    <p className="text-2xl font-bold text-green-700 mt-1">{formatRupiah(totalSisa)}</p>
+                    <p className="text-xs text-green-500 mt-1">{totalPagu > 0 ? ((totalSisa/totalPagu)*100).toFixed(1) : 100}% tersisa</p>
+                  </div>
+                </div>
+                <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-3 items-center">
+                  <div className="relative flex-1 w-full">
+                    <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+                    <input value={rakSearch} onChange={e => setRakSearch(e.target.value)}
+                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-400 focus:outline-none"
+                      placeholder="Cari nama sekolah atau kecamatan..."/>
+                  </div>
+                  <select value={rakFilterKec} onChange={e => setRakFilterKec(e.target.value)}
+                    className="w-full md:w-48 p-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-400 bg-white">
+                    <option>Semua Kecamatan</option>
+                    {KECAMATAN_LIST.map(k => <option key={k}>{k}</option>)}
+                  </select>
+                  <select value={rakFilterTw} onChange={e => setRakFilterTw(e.target.value)}
+                    className="w-full md:w-44 p-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-400 bg-white">
+                    <option>Semua Triwulan</option>
+                    <option>Triwulan 1</option><option>Triwulan 2</option><option>Triwulan 3</option><option>Triwulan 4</option>
+                  </select>
+                </div>
+                {rakLoading && (
+                  <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-100">
+                    <svg className="animate-spin h-10 w-10 text-green-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p className="text-green-700 font-semibold">Memuat data RAK BOS 2026...</p>
+                    <p className="text-gray-400 text-sm mt-1">Mengambil data 389 sekolah dari server</p>
+                  </div>
+                )}
+                {!rakLoading && (
+                  <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse text-sm">
+                        <thead>
+                          <tr style={{backgroundColor:'#16a34a'}} className="text-white">
+                            <th className="p-3 font-semibold text-center w-10">No</th>
+                            <th className="p-3 font-semibold">Sekolah</th>
+                            <th className="p-3 font-semibold">Kecamatan</th>
+                            <th className="p-3 font-semibold text-right">Pagu Total</th>
+                            <th className="p-3 font-semibold text-right" style={{backgroundColor:'#ea580c'}}>Diajukan</th>
+                            <th className="p-3 font-semibold text-right">Sisa Pagu</th>
+                            <th className="p-3 font-semibold text-center">Serapan</th>
+                            <th className="p-3 font-semibold text-center">Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.length === 0 ? (
+                            <tr><td colSpan={8} className="p-10 text-center text-gray-400">Tidak ada data sekolah ditemukan.</td></tr>
+                          ) : filtered.map((s, idx) => {
+                            const diajukan = getSpjDiajukan(s.namaUpt);
+                            const sisa = s.paguTotal - diajukan;
+                            const serapan = s.paguTotal > 0 ? (diajukan / s.paguTotal) * 100 : 0;
+                            return (
+                              <tr key={s.no} className={`border-b border-gray-100 hover:bg-green-50 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                <td className="p-3 text-center text-gray-500">{idx + 1}</td>
+                                <td className="p-3 font-medium text-gray-800">{s.namaDisplay}</td>
+                                <td className="p-3"><span className="text-green-700 font-medium text-xs bg-green-100 px-2 py-0.5 rounded-full">{s.kecamatan}</span></td>
+                                <td className="p-3 text-right font-medium text-gray-800">{formatRupiah(s.paguTotal)}</td>
+                                <td className="p-3 text-right font-medium text-orange-600">{diajukan > 0 ? formatRupiah(diajukan) : <span className="text-gray-300">—</span>}</td>
+                                <td className="p-3 text-right font-bold text-green-700">{formatRupiah(sisa)}</td>
+                                <td className="p-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 bg-gray-200 rounded-full h-2 min-w-[60px]">
+                                      <div className="bg-green-500 h-2 rounded-full transition-all" style={{width: `${Math.min(100,serapan)}%`}}></div>
+                                    </div>
+                                    <span className="text-xs text-gray-500 w-8 text-right">{serapan.toFixed(0)}%</span>
+                                  </div>
+                                </td>
+                                <td className="p-3 text-center">
+                                  <button onClick={() => openDetail(s)}
+                                    className="inline-flex items-center gap-1 bg-green-50 text-green-700 hover:bg-green-100 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-green-200">
+                                    <IconEye size={13}/> Detail
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                        {filtered.length > 0 && (
+                          <tfoot>
+                            <tr className="bg-gray-100 border-t-2 border-gray-300 font-bold text-sm">
+                              <td colSpan={3} className="p-3 text-gray-700">Total ({filtered.length} Sekolah)</td>
+                              <td className="p-3 text-right text-gray-800">{formatRupiah(totalPagu)}</td>
+                              <td className="p-3 text-right text-orange-600">{formatRupiah(totalDiajukan)}</td>
+                              <td className="p-3 text-right text-green-700">{formatRupiah(totalSisa)}</td>
+                              <td colSpan={2} className="p-3 text-center text-gray-500 text-xs">Serapan: {totalPagu > 0 ? ((totalDiajukan/totalPagu)*100).toFixed(1) : 0}%</td>
+                            </tr>
+                          </tfoot>
+                        )}
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {rakDetailOpen && rakDetailSekolah && (
+                  <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[92vh]">
+                      <div className="flex justify-between items-start p-5 border-b bg-green-600 rounded-t-2xl">
+                        <div>
+                          <h3 className="text-lg font-bold text-white flex items-center gap-2"><IconTable size={20}/> {rakDetailSekolah.namaDisplay}</h3>
+                          <p className="text-green-100 text-sm mt-0.5">{rakDetailSekolah.namaAsli}</p>
+                          <p className="text-green-200 text-xs mt-1">Kecamatan {rakDetailSekolah.kecamatan} • Pagu Total: {formatRupiah(rakDetailSekolah.paguTotal)}</p>
+                        </div>
+                        <button onClick={() => setRakDetailOpen(false)} className="text-white hover:text-green-200 transition"><IconXCircle size={24}/></button>
+                      </div>
+                      <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-3 border-b bg-gray-50">
+                        {[1,2,3,4].map(tw => {
+                          const twKey = `tw${tw}`;
+                          const twLabels = {1:'TW 1 (Jan-Mar)',2:'TW 2 (Apr-Jun)',3:'TW 3 (Jul-Sep)',4:'TW 4 (Okt-Des)'};
+                          const diajukanTw = dataSpj
+                            .filter(s => s.sekolah === rakDetailSekolah.namaUpt && s.triwulan === `Triwulan ${tw}` && (s.status === 'Menunggu Verifikasi' || s.status === 'Siap Cair'))
+                            .reduce((a, s) => a + (Number(s.nominal)||0), 0);
+                          const paguTw = rakDetailSekolah[twKey] || 0;
+                          const sisaTw = paguTw - diajukanTw;
+                          return (
+                            <div key={tw} className={`rounded-xl p-3 border ${paguTw === 0 ? 'bg-gray-100 border-gray-200' : 'bg-white border-green-200'}`}>
+                              <p className="text-xs font-bold text-gray-600">{twLabels[tw]}</p>
+                              <p className={`text-sm font-bold mt-1 ${paguTw === 0 ? 'text-gray-400' : 'text-green-700'}`}>{paguTw === 0 ? 'Tidak ada pagu' : formatRupiah(paguTw)}</p>
+                              {paguTw > 0 && <p className={`text-xs mt-0.5 ${diajukanTw > 0 ? 'text-orange-500' : 'text-gray-400'}`}>Diajukan: {diajukanTw > 0 ? formatRupiah(diajukanTw) : '—'}</p>}
+                              {paguTw > 0 && <p className={`text-xs font-semibold ${sisaTw < 0 ? 'text-red-600' : 'text-green-600'}`}>Sisa: {formatRupiah(Math.max(0, sisaTw))}</p>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="overflow-y-auto flex-1 p-4">
+                        <h4 className="font-bold text-gray-700 mb-3 text-sm flex items-center gap-1"><IconFileText size={15}/> Detail Rincian Belanja & Pagu Per Triwulan</h4>
+                        {rakDetailSekolah.rincian.length === 0 ? (
+                          <p className="text-gray-400 text-sm italic text-center py-8">Tidak ada data rincian untuk sekolah ini.</p>
+                        ) : (
+                          <div className="overflow-x-auto rounded-xl border border-gray-200">
+                            <table className="w-full text-xs border-collapse">
+                              <thead>
+                                <tr className="bg-gray-100 text-gray-600">
+                                  <th className="p-2.5 text-left font-semibold min-w-[200px]">Rincian Belanja</th>
+                                  <th className="p-2.5 text-right font-semibold">Pagu Total</th>
+                                  <th className="p-2.5 text-right font-semibold bg-orange-50 text-orange-700">Diajukan</th>
+                                  <th className="p-2.5 text-right font-semibold bg-teal-50 text-teal-700">Sisa Pagu</th>
+                                  <th className="p-2.5 text-center font-semibold bg-blue-50 text-blue-700" colSpan={3}>TW 1 (Jan-Mar)</th>
+                                  <th className="p-2.5 text-center font-semibold bg-yellow-50 text-yellow-700" colSpan={3}>TW 2 (Apr-Jun)</th>
+                                  <th className="p-2.5 text-center font-semibold bg-green-50 text-green-700" colSpan={3}>TW 3 (Jul-Sep)</th>
+                                  <th className="p-2.5 text-center font-semibold bg-purple-50 text-purple-700" colSpan={3}>TW 4 (Okt-Des)</th>
+                                </tr>
+                                <tr className="bg-gray-50 text-gray-500 text-xs">
+                                  <th className="p-2 text-left"></th><th className="p-2 text-right"></th>
+                                  <th className="p-2 text-right bg-orange-50"></th><th className="p-2 text-right bg-teal-50"></th>
+                                  <th className="p-2 text-right bg-blue-50">Jan</th><th className="p-2 text-right bg-blue-50">Feb</th><th className="p-2 text-right font-bold bg-blue-100 text-blue-700">Mar</th>
+                                  <th className="p-2 text-right bg-yellow-50">Apr</th><th className="p-2 text-right bg-yellow-50">Mei</th><th className="p-2 text-right font-bold bg-yellow-100 text-yellow-700">Jun</th>
+                                  <th className="p-2 text-right bg-green-50">Jul</th><th className="p-2 text-right bg-green-50">Agu</th><th className="p-2 text-right font-bold bg-green-100 text-green-700">Sep</th>
+                                  <th className="p-2 text-right bg-purple-50">Okt</th><th className="p-2 text-right bg-purple-50">Nov</th><th className="p-2 text-right font-bold bg-purple-100 text-purple-700">Des</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {rakDetailSekolah.rincian.map((r, idx) => {
+                                  const diajukanRincian = getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode);
+                                  const sisaRincian = r.paguTotal - diajukanRincian;
+                                  return (
+                                    <tr key={idx} className={`border-t border-gray-100 hover:bg-green-50 ${idx % 2 === 0 ? '' : 'bg-gray-50'}`}>
+                                      <td className="p-2.5"><div className="font-semibold text-gray-800">{r.nama}</div><div className="text-gray-400 text-xs">{r.kode}</div></td>
+                                      <td className="p-2.5 text-right font-bold text-gray-800">{formatRupiah(r.paguTotal)}</td>
+                                      <td className="p-2.5 text-right bg-orange-50">{diajukanRincian > 0 ? <span className="font-semibold text-orange-600">{formatRupiah(diajukanRincian)}</span> : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2.5 text-right bg-teal-50"><span className={`font-bold ${sisaRincian < 0 ? 'text-red-600' : sisaRincian === r.paguTotal ? 'text-gray-500' : 'text-teal-700'}`}>{formatRupiah(Math.max(0, sisaRincian))}{sisaRincian < r.paguTotal && sisaRincian >= 0 && diajukanRincian > 0 && <span className="ml-1 text-orange-400">↓</span>}{sisaRincian < 0 && <span className="ml-1">⚠</span>}</span></td>
+                                      <td className="p-2 text-right bg-blue-50 text-blue-800">{r.jan > 0 ? formatRupiah(r.jan) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-blue-50 text-blue-800">{r.feb > 0 ? formatRupiah(r.feb) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-blue-100 text-blue-900 font-semibold">{r.mar > 0 ? formatRupiah(r.mar) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-yellow-50 text-yellow-800">{r.apr > 0 ? formatRupiah(r.apr) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-yellow-50 text-yellow-800">{r.mei > 0 ? formatRupiah(r.mei) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-yellow-100 text-yellow-900 font-semibold">{r.jun > 0 ? formatRupiah(r.jun) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-green-50 text-green-800">{r.jul > 0 ? formatRupiah(r.jul) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-green-50 text-green-800">{r.agu > 0 ? formatRupiah(r.agu) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-green-100 text-green-900 font-semibold">{r.sep > 0 ? formatRupiah(r.sep) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-purple-50 text-purple-800">{r.okt > 0 ? formatRupiah(r.okt) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-purple-50 text-purple-800">{r.nov > 0 ? formatRupiah(r.nov) : <span className="text-gray-300">—</span>}</td>
+                                      <td className="p-2 text-right bg-purple-100 text-purple-900 font-semibold">{r.des > 0 ? formatRupiah(r.des) : <span className="text-gray-300">—</span>}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                              <tfoot>
+                                <tr className="bg-gray-200 font-bold border-t-2 border-gray-300">
+                                  <td className="p-2.5 text-gray-700">TOTAL</td>
+                                  <td className="p-2.5 text-right text-gray-800">{formatRupiah(rakDetailSekolah.paguTotal)}</td>
+                                  <td className="p-2.5 text-right bg-orange-100 text-orange-700">{(() => { const t = rakDetailSekolah.rincian.reduce((acc, r) => acc + getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode), 0); return t > 0 ? formatRupiah(t) : <span className="text-gray-400 font-normal">—</span>; })()}</td>
+                                  <td className="p-2.5 text-right bg-teal-100 text-teal-800">{(() => { const t = rakDetailSekolah.rincian.reduce((acc, r) => acc + getSpjDiajukanPerRincian(rakDetailSekolah.namaUpt, r.kode), 0); return formatRupiah(Math.max(0, rakDetailSekolah.paguTotal - t)); })()}</td>
+                                  <td className="p-2 text-right bg-blue-100 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.jan,0))}</td>
+                                  <td className="p-2 text-right bg-blue-100 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.feb,0))}</td>
+                                  <td className="p-2 text-right bg-blue-200 text-blue-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.mar,0))}</td>
+                                  <td className="p-2 text-right bg-yellow-100 text-yellow-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.apr,0))}</td>
+                                  <td className="p-2 text-right bg-yellow-100 text-yellow-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.mei,0))}</td>
+                                  <td className="p-2 text-right bg-yellow-200 text-yellow-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.jun,0))}</td>
+                                  <td className="p-2 text-right bg-green-100 text-green-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.jul,0))}</td>
+                                  <td className="p-2 text-right bg-green-100 text-green-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.agu,0))}</td>
+                                  <td className="p-2 text-right bg-green-200 text-green-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.sep,0))}</td>
+                                  <td className="p-2 text-right bg-purple-100 text-purple-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.okt,0))}</td>
+                                  <td className="p-2 text-right bg-purple-100 text-purple-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.nov,0))}</td>
+                                  <td className="p-2 text-right bg-purple-200 text-purple-900">{formatRupiah(rakDetailSekolah.rincian.reduce((a,r)=>a+r.des,0))}</td>
+                                </tr>
+                              </tfoot>
+                            </table>
+                          </div>
+                        )}
+                        {(() => {
+                          const spjSekolah = dataSpj.filter(s => s.sekolah === rakDetailSekolah.namaUpt);
+                          if (spjSekolah.length === 0) return null;
+                          return (
+                            <div className="mt-4">
+                              <h4 className="font-bold text-gray-700 mb-2 text-sm flex items-center gap-1"><IconClipboardCheck size={15}/> SPJ Sudah Diajukan</h4>
+                              <div className="rounded-xl border border-gray-200 overflow-hidden">
+                                <table className="w-full text-xs border-collapse">
+                                  <thead><tr className="bg-gray-100 text-gray-600"><th className="p-2.5 text-left">ID SPJ</th><th className="p-2.5 text-left">Triwulan</th><th className="p-2.5 text-left">Rincian</th><th className="p-2.5 text-right">Nominal</th><th className="p-2.5 text-center">Status</th></tr></thead>
+                                  <tbody>
+                                    {spjSekolah.map((s, i) => (
+                                      <tr key={i} className="border-t border-gray-100 hover:bg-gray-50">
+                                        <td className="p-2.5 text-gray-600 font-mono">{s.id}</td>
+                                        <td className="p-2.5 text-gray-700">{s.triwulan}</td>
+                                        <td className="p-2.5 text-gray-700 max-w-[200px] truncate" title={s.rincian}>{s.rincian}</td>
+                                        <td className="p-2.5 text-right font-bold text-blue-700">{formatRupiah(s.nominal)}</td>
+                                        <td className="p-2.5 text-center"><span className={`px-2 py-0.5 rounded-full text-xs font-medium ${s.status === 'Siap Cair' ? 'bg-green-100 text-green-800' : s.status === 'Revisi' ? 'bg-red-100 text-red-800' : s.status === 'Ditunda' ? 'bg-orange-100 text-orange-800' : s.status === 'Menunggu Verifikasi' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>{s.status}</span></td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      <div className="p-4 border-t flex justify-end">
+                        <button onClick={() => setRakDetailOpen(false)} className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-sm transition">Tutup</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          };
+
+          // ============================================================
+          // FUNGSI RENDER TABEL SPJ (dipakai oleh semua tab daftar SPJ)
+          // PERUBAHAN POIN 1: filter tidak direset, hanya diaplikasikan
+          // PERUBAHAN POIN 2: activeTab 'revisi' dan 'ditunda' dipisah
+          // ============================================================
+          const renderSpjTable = (statusFilter) => {
+            let dataSpjFiltered = dataSpj.filter(spj => {
+              if (statusFilter === 'verifikasi') return spj.status === 'Menunggu Verifikasi';
+              if (statusFilter === 'siapCair') return spj.status === 'Siap Cair';
+              if (statusFilter === 'revisi') return spj.status === 'Revisi';
+              if (statusFilter === 'ditunda') return spj.status === 'Ditunda';
+              return false;
+            });
+
+            // Filter PIC di tab verifikasi (mode akses PIC)
+            if (statusFilter === 'verifikasi' && aksesPic !== 'Semua') {
+              dataSpjFiltered = dataSpjFiltered.filter(spj => spj.pic === aksesPic);
+            }
+
+            // Filter kecamatan (semua tab)
+            if (filterKecamatan !== 'Semua') {
+              dataSpjFiltered = dataSpjFiltered.filter(spj => spj.kecamatan === filterKecamatan);
+            }
+
+            // Filter PIC (bukan verifikasi)
+            if (statusFilter !== 'verifikasi' && filterPic !== 'Semua') {
+              dataSpjFiltered = dataSpjFiltered.filter(spj => spj.pic === filterPic);
+            }
+
+            // Filter triwulan
+            if (filterTriwulan !== 'Semua') {
+              dataSpjFiltered = dataSpjFiltered.filter(spj => spj.triwulan === filterTriwulan);
+            }
+
+            // Urutkan
+            dataSpjFiltered = [...dataSpjFiltered].sort((a, b) => {
+              const numA = parseInt(a.id?.replace(/\D/g, '') || 0);
+              const numB = parseInt(b.id?.replace(/\D/g, '') || 0);
+              return sortOrder === 'asc' ? numA - numB : numB - numA;
+            });
+
+            // Search
+            if (searchQuery.trim() !== '') {
+              const q = searchQuery.toLowerCase();
+              dataSpjFiltered = dataSpjFiltered.filter(spj =>
+                (spj.sekolah && spj.sekolah.toLowerCase().includes(q)) ||
+                (spj.id && spj.id.toLowerCase().includes(q)) ||
+                (spj.kecamatan && spj.kecamatan.toLowerCase().includes(q)) ||
+                (spj.rincian && spj.rincian.toLowerCase().includes(q)) ||
+                (spj.nominal && String(spj.nominal).includes(q))
+              );
+            }
+
+            const totalNominal = dataSpjFiltered.reduce((acc, s) => acc + (Number(s.nominal) || 0), 0);
+
+            const judulTab = {
+              verifikasi: 'Antrian Verifikasi SPJ',
+              siapCair: 'Daftar SPJ Siap Cair',
+              revisi: 'Daftar SPJ Perlu Revisi',
+              ditunda: 'Daftar SPJ Ditunda',
+            }[statusFilter];
+
+            const warnaBadge = {
+              verifikasi: 'bg-yellow-100 text-yellow-800',
+              siapCair: 'bg-green-100 text-green-800',
+              revisi: 'bg-red-100 text-red-800',
+              ditunda: 'bg-orange-100 text-orange-800',
+            }[statusFilter];
+
+            return (
+              <div>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold flex items-center gap-2">
+                      {judulTab}
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${warnaBadge}`}>{dataSpjFiltered.length}</span>
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      Total: <span className="font-semibold text-blue-600">{formatRupiah(totalNominal)}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-full md:w-64">
+                      <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
+                      <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full pl-9 pr-8 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none bg-white shadow-sm"
+                        placeholder="Cari sekolah, ID, rincian..."/>
+                      {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>}
+                    </div>
+                    {statusFilter === 'siapCair' && (
+                      <button onClick={() => downloadExcel(dataSpjFiltered)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center shadow-md transition">
+                        <IconDownload size={16} className="mr-2"/> Unduh Rekap (Excel)
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Filter bar — TETAP ada di semua tab, filter TIDAK reset saat ganti tab */}
+                <div className="mb-4 bg-white border border-gray-200 rounded-xl p-3 shadow-sm flex flex-col md:flex-row gap-3 items-center flex-wrap">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 shrink-0">
+                    <IconFilter size={14}/> Filter:
+                  </div>
+                  <select value={filterKecamatan} onChange={e => setFilterKecamatan(e.target.value)}
+                    className="w-full md:w-44 p-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-400">
+                    <option value="Semua">Semua Kecamatan</option>
+                    {KECAMATAN_LIST.map(k => <option key={k} value={k}>{k}</option>)}
+                  </select>
+                  <select value={filterPic} onChange={e => setFilterPic(e.target.value)}
+                    className="w-full md:w-36 p-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-400">
+                    <option value="Semua">Semua PIC</option>
+                    {PIC_LIST.map(p => <option key={p} value={p}>PIC: {p}</option>)}
+                  </select>
+                  <select value={filterTriwulan} onChange={e => setFilterTriwulan(e.target.value)}
+                    className="w-full md:w-40 p-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-400">
+                    <option value="Semua">Semua Triwulan</option>
+                    <option value="Triwulan 1">Triwulan 1</option>
+                    <option value="Triwulan 2">Triwulan 2</option>
+                    <option value="Triwulan 3">Triwulan 3</option>
+                    <option value="Triwulan 4">Triwulan 4</option>
+                  </select>
+                  <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white shadow-sm hover:bg-gray-50 font-medium whitespace-nowrap">
+                    {sortOrder === 'asc' ? '⬆ Terlama' : '⬇ Terbaru'}
+                  </button>
+                  {(filterKecamatan !== 'Semua' || filterPic !== 'Semua' || filterTriwulan !== 'Semua' || searchQuery) && (
+                    <button onClick={() => { setFilterKecamatan('Semua'); setFilterPic('Semua'); setFilterTriwulan('Semua'); setSearchQuery(''); }}
+                      className="px-3 py-2 bg-red-50 text-red-500 hover:bg-red-100 border border-red-200 rounded-lg text-xs font-bold transition whitespace-nowrap">
+                      ✕ Reset Filter
+                    </button>
+                  )}
+                </div>
+
+                {/* Mode akses PIC hanya di tab verifikasi */}
+                {statusFilter === 'verifikasi' && (
+                  <div className="mb-4 bg-blue-50 border border-blue-200 p-4 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+                    <div>
+                      <h3 className="font-bold text-blue-800 flex items-center"><IconClipboardCheck size={18} className="mr-2"/>Mode Akses Verifikator</h3>
+                      <p className="text-sm text-blue-600 mt-1">Pilih nama PIC Anda untuk memfilter SPJ dan membuka akses Koreksi/Edit/Hapus.</p>
+                    </div>
+                    <select value={aksesPic} onChange={(e) => setAksesPic(e.target.value)}
+                      className="w-full md:w-auto p-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm font-bold bg-white text-gray-700 cursor-pointer shadow-sm">
+                      <option value="Semua">-- Semua PIC (Hanya Mode Lihat) --</option>
+                      {PIC_LIST.map(pic => <option key={pic} value={pic}>Login sbg PIC: {pic}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                <TableTemplate
+                  data={dataSpjFiltered}
+                  showVerifyAction={true}
+                  requiresPicLock={statusFilter === 'verifikasi'}
+                  currentPic={aksesPic}
+                />
+              </div>
+            );
+          };
+
+          return (
+            <div className="min-h-screen bg-gray-100 flex font-sans">
+              {/* SIDEBAR */}
+              <aside className={`bg-white shadow-md flex-col hidden md:flex z-10 transition-all duration-300 overflow-hidden ${sidebarOpen ? 'w-64' : 'w-0'}`}>
+                <div className="p-6 border-b">
+                  <h1 className="text-xl font-extrabold text-blue-700">Sistem SPJ<span className="text-gray-800">BOS</span></h1>
+                  <p className="text-xs text-gray-500">Dinas Pendidikan</p>
+                  <div className={`mt-2 flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full w-fit ${isSyncing ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
+                    <IconWifi size={11}/>
+                    {isSyncing ? 'Menyambungkan...' : 'Tersinkron Realtime'}
+                  </div>
+                </div>
+                <nav className="flex-1 p-4 space-y-1">
+                  <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'dashboard' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconDashboard/> <span>Dashboard</span></button>
+                  <button onClick={() => setActiveTab('penerimaan')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'penerimaan' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconFileText/> <span>Terima SPJ Baru</span></button>
+                  <button onClick={() => setActiveTab('verifikasi')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'verifikasi' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconClipboardCheck/> <span className="flex-1 text-left">Antrian Verifikasi</span> {stats.menunggu > 0 && <span className="bg-yellow-400 text-yellow-900 text-xs px-2 rounded-full">{stats.menunggu}</span>}</button>
+                  <button onClick={() => setActiveTab('siapCair')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'siapCair' ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-50'}`}><IconBanknote/> <span>Antrian Siap Cair</span></button>
+                  {/* PERUBAHAN POIN 2: Revisi & Tunda dipisah jadi 2 menu */}
+                  <button onClick={() => setActiveTab('revisi')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'revisi' ? 'bg-red-50 text-red-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                    <IconRotateCcw className={activeTab === 'revisi' ? 'text-red-600' : ''}/>
+                    <span className="flex-1 text-left">Perlu Revisi</span>
+                    {stats.revisi > 0 && <span className="bg-red-100 text-red-800 text-xs px-2 rounded-full font-bold">{stats.revisi}</span>}
+                  </button>
+                  <button onClick={() => setActiveTab('ditunda')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'ditunda' ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                    <IconPauseCircle className={activeTab === 'ditunda' ? 'text-orange-600' : ''}/>
+                    <span className="flex-1 text-left">SPJ Ditunda</span>
+                    {stats.ditunda > 0 && <span className="bg-orange-100 text-orange-800 text-xs px-2 rounded-full font-bold">{stats.ditunda}</span>}
+                  </button>
+                  <button onClick={() => setActiveTab('rakBosda')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === 'rakBosda' ? 'bg-green-50 text-green-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+                    <IconTable/> <span className="flex-1 text-left">RAK BOSDA 2026</span>
+                    <span className="bg-green-100 text-green-800 text-xs px-2 rounded-full font-bold">389</span>
+                  </button>
+                </nav>
+              </aside>
+
+              <main className="flex-1 flex flex-col h-screen overflow-hidden">
+                <header className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-gray-100 transition text-gray-600">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <span className="font-bold text-gray-700">Panel Verifikator</span>
+                  </div>
+                  <div className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${isSyncing ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
+                    <span className={`w-2 h-2 rounded-full ${isSyncing ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}></span>
+                    {isSyncing ? 'Menyambungkan ke server...' : `${dataSpj.length} data tersinkron`}
+                  </div>
+                </header>
+
+                {isSyncing && (
+                  <div className="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-50">
+                    <svg className="animate-spin h-10 w-10 text-blue-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p className="text-blue-700 font-semibold text-lg">Menyambungkan ke database...</p>
+                    <p className="text-gray-500 text-sm mt-1">Memuat data realtime dari Firestore</p>
+                  </div>
+                )}
+
+                <div className="flex-1 overflow-auto p-4 md:p-8 relative z-0">
+                  {activeTab === 'dashboard' && renderDashboard()}
+                  {activeTab === 'penerimaan' && renderPenerimaan()}
+                  {activeTab === 'rakBosda' && renderRakBosda()}
+                  {activeTab === 'verifikasi' && renderSpjTable('verifikasi')}
+                  {activeTab === 'siapCair' && renderSpjTable('siapCair')}
+                  {activeTab === 'revisi' && renderSpjTable('revisi')}
+                  {activeTab === 'ditunda' && renderSpjTable('ditunda')}
+                </div>
+              </main>
+
+              {/* MODAL VERIFIKASI */}
+              {isModalOpen && selectedSpj && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-xl flex flex-col max-h-[90vh]">
+                    <div className="flex justify-between items-center"><h3 className="text-xl font-bold">Verifikasi Berkas</h3><button onClick={() => setIsModalOpen(false)}><IconXCircle/></button></div>
+                    <div className="overflow-y-auto flex-1 space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-lg text-sm grid grid-cols-2 gap-4 border border-gray-200">
+                        <div><p><b>Instansi:</b> {selectedSpj.sekolah} (Kec. {selectedSpj.kecamatan})</p><p><b>PIC:</b> <span className="font-bold text-indigo-700">{selectedSpj.pic}</span></p><p><b>Tgl Update:</b> {selectedSpj.tanggal}</p></div>
+                        <div><p><b>Triwulan:</b> {selectedSpj.triwulan}</p><p><b>Nominal:</b> <span className="text-blue-600 font-bold text-lg">{formatRupiah(selectedSpj.nominal)}</span></p><p className="mt-1"><b>Rincian:</b> <span className="bg-white px-2 py-1 rounded border shadow-sm block mt-1">{selectedSpj.rincian}</span></p></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold mb-2">Keputusan Verifikator:</label>
+                        <div className="flex space-x-2">
+                          <button onClick={() => setVerdict('Siap Cair')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Siap Cair' ? 'bg-green-100 border-green-500 text-green-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Diterima (Siap Cair)</button>
+                          <button onClick={() => setVerdict('Revisi')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Revisi' ? 'bg-red-100 border-red-500 text-red-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Kembalikan (Revisi)</button>
+                          <button onClick={() => setVerdict('Ditunda')} className={`flex-1 py-3 border rounded text-sm transition ${verdict === 'Ditunda' ? 'bg-orange-100 border-orange-500 text-orange-700 font-bold shadow-inner' : 'hover:bg-gray-50'}`}>Tunda Proses</button>
+                        </div>
+                      </div>
+                      {localRiwayat.length > 0 && (
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs font-bold text-orange-700">🕐 Riwayat Catatan Sebelumnya:</p>
+                            <div className="flex gap-1.5">
+                              {Object.values(checkedRiwayat).some(Boolean) && (
+                                <>
+                                  <button onClick={() => { const updated = localRiwayat.map((item, i) => checkedRiwayat[i] ? { ...item, selesai: !item.selesai } : item); setLocalRiwayat(updated); setCheckedRiwayat({}); }}
+                                    className="text-xs bg-green-100 text-green-700 hover:bg-green-200 px-2 py-1 rounded font-bold transition flex items-center gap-1">✅ Tandai Selesai</button>
+                                  <button onClick={() => { const newRiwayat = localRiwayat.filter((_, i) => !checkedRiwayat[i]); setLocalRiwayat(newRiwayat); setCheckedRiwayat({}); }}
+                                    className="text-xs bg-red-100 text-red-600 hover:bg-red-200 px-2 py-1 rounded font-bold transition flex items-center gap-1">🗑 Hapus ({Object.values(checkedRiwayat).filter(Boolean).length})</button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                            {localRiwayat.map((r, i) => (
+                              <div key={i} className={`text-xs rounded px-2.5 py-1.5 border flex items-start gap-2 transition ${r.selesai ? 'bg-green-50 border-green-200' : checkedRiwayat[i] ? 'bg-red-50 border-red-200 opacity-60' : 'bg-white border-orange-100'}`}>
+                                <input type="checkbox" checked={!!checkedRiwayat[i]} onChange={() => setCheckedRiwayat(prev => ({ ...prev, [i]: !prev[i] }))} className="mt-0.5 w-3.5 h-3.5 flex-shrink-0 cursor-pointer" style={{accentColor: r.selesai ? '#16a34a' : '#ef4444'}}/>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1 flex-wrap">
+                                    <span className="flex-shrink-0">{r.selesai ? '✅' : r.status === 'Revisi' ? '🔴' : r.status === 'Ditunda' ? '🟠' : '🔵'}</span>
+                                    <span className={`font-bold ${r.selesai ? 'text-green-600' : r.status === 'Revisi' ? 'text-red-600' : r.status === 'Ditunda' ? 'text-orange-600' : 'text-blue-600'}`}>[{r.status} — {r.tanggal}]</span>
+                                    {r.selesai && <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs font-bold">✓ Selesai</span>}
+                                  </div>
+                                  {editingRiwayatIdx === i ? (
+                                    <div className="mt-1 flex gap-1.5 items-center">
+                                      <input type="text" value={editingRiwayatText} onChange={e => setEditingRiwayatText(e.target.value)}
+                                        className="flex-1 border border-blue-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400" autoFocus
+                                        onKeyDown={e => { if (e.key === 'Enter') { const updated = localRiwayat.map((item, idx) => idx === i ? { ...item, catatan: editingRiwayatText } : item); setLocalRiwayat(updated); setEditingRiwayatIdx(null); } if (e.key === 'Escape') setEditingRiwayatIdx(null); }}/>
+                                      <button onClick={() => { const updated = localRiwayat.map((item, idx) => idx === i ? { ...item, catatan: editingRiwayatText } : item); setLocalRiwayat(updated); setEditingRiwayatIdx(null); }} className="bg-blue-500 text-white px-2 py-0.5 rounded text-xs font-bold hover:bg-blue-600">✓</button>
+                                      <button onClick={() => setEditingRiwayatIdx(null)} className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-xs hover:bg-gray-300">✕</button>
+                                    </div>
+                                  ) : (
+                                    <span className={`${r.selesai ? 'text-green-600 line-through' : checkedRiwayat[i] ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{r.catatan || '(tanpa catatan)'}</span>
+                                  )}
+                                </div>
+                                {editingRiwayatIdx !== i && !checkedRiwayat[i] && (
+                                  <button onClick={() => { setEditingRiwayatIdx(i); setEditingRiwayatText(r.catatan || ''); }} className="flex-shrink-0 text-blue-400 hover:text-blue-600 transition" title="Edit catatan">✏️</button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1.5 italic">☑ centang → ✅ Tandai Selesai atau 🗑 Hapus • ✏️ klik untuk edit teks</p>
+                        </div>
+                      )}
+                      <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <label className="block text-xs font-semibold text-gray-600 mb-1">
+                          {verdict === 'Siap Cair' ? '📝 Catatan tambahan (opsional):' : '📝 Alasan Revisi/Tunda (wajib diisi):'}
+                        </label>
+                        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows="2"
+                          className="w-full p-2 border rounded-lg text-sm"
+                          placeholder={verdict === 'Siap Cair' ? 'Tulis catatan jika ada...' : 'Tulis alasan revisi/tunda...'}></textarea>
+                      </div>
+                    </div>
+                    <div className="flex justify-end space-x-2 pt-4 border-t">
+                      <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded text-gray-600 font-medium">Batal</button>
+                      <button onClick={submitVerification} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold shadow-md">Simpan Perubahan</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* MODAL EDIT */}
+              {isEditModalOpen && editingSpj && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                  <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold flex items-center"><IconEdit className="mr-2 text-amber-500" size={24}/> Edit Data SPJ</h3>
+                      <button onClick={() => setIsEditModalOpen(false)}><IconXCircle/></button>
+                    </div>
+                    <form onSubmit={handleSaveEdit} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+                          <select required name="kecamatan" value={editingSpj.kecamatan}
+                            onChange={(e) => setEditingSpj({...editingSpj, kecamatan: e.target.value, sekolah: ''})}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                            <option value="">-- Pilih Kecamatan --</option>
+                            {KECAMATAN_LIST.map(kec => <option key={kec} value={kec}>{kec}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nama Sekolah</label>
+                          <select required name="sekolah" value={editingSpj.sekolah}
+                            onChange={(e) => setEditingSpj({...editingSpj, sekolah: e.target.value})}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                            <option value="">-- Pilih Sekolah --</option>
+                            {SEKOLAH_DATA[editingSpj.kecamatan]?.map(sek => <option key={sek} value={sek}>{sek}</option>)}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Triwulan Pelaksanaan</label>
+                          <select required name="triwulan" value={editingSpj.triwulan}
+                            onChange={(e) => setEditingSpj({...editingSpj, triwulan: e.target.value})}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500">
+                            <option value="Triwulan 1">Triwulan 1 (Jan-Mar)</option>
+                            <option value="Triwulan 2">Triwulan 2 (Apr-Jun)</option>
+                            <option value="Triwulan 3">Triwulan 3 (Jul-Sep)</option>
+                            <option value="Triwulan 4">Triwulan 4 (Okt-Des)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Nominal (Rp)</label>
+                          <input required name="nominal" type="number" value={editingSpj.nominal}
+                            onChange={(e) => setEditingSpj({...editingSpj, nominal: e.target.value})}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500"/>
+                        </div>
+                      </div>
+                      <div className="relative z-20">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Rincian Belanja Singkat</label>
+                        <CustomComboBox name="rincian" value={editingSpj.rincian}
+                          onChange={(e) => setEditingSpj({...editingSpj, rincian: e.target.value})}
+                          options={RINCIAN_OPTIONS}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500" required/>
+                      </div>
+                      <div className="flex justify-end space-x-2 pt-4 border-t">
+                        <button type="button" onClick={() => setIsEditModalOpen(false)} disabled={isLoading}
+                          className="px-4 py-2 border rounded text-gray-600 hover:bg-gray-50 disabled:opacity-50">Batal</button>
+                        <button type="submit" disabled={isLoading}
+                          className={`px-4 py-2 text-white rounded font-bold transition flex items-center ${isLoading ? 'bg-amber-300 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600'}`}>
+                          {isLoading ? (
+                            <><svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>Menyimpan...</>
+                          ) : "Simpan Perubahan"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        const rootElement = document.getElementById("root");
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App/>);
+    </script>
+</body>
+</html>
