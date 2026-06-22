@@ -821,7 +821,7 @@
               setActiveTab('verifikasi');
               // Sinkron ke SheetBest (opsional, tidak blok kalau gagal)
               try {
-                await fetch('https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630', {
+                await fetch('https://script.google.com/macros/s/AKfycbw7Bg-nPUQxOtyWJgUQKp0VaSE4SadAXr-iqkJLjSjiuR_jAtZsEHrxAk7SXnf42Hleqw/exec', {
                   method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSpj),
                 });
               } catch (sheetErr) {
@@ -851,9 +851,9 @@
               alert('Status berhasil diperbarui!');
               // Sinkron ke SheetBest (opsional)
               try {
-                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${selectedSpj.id}`, {
-                  method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(updatePayload),
+                await fetch(`https://script.google.com/macros/s/AKfycbw7Bg-nPUQxOtyWJgUQKp0VaSE4SadAXr-iqkJLjSjiuR_jAtZsEHrxAk7SXnf42Hleqw/exec?id=${selectedSpj.id}`, {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({...updatePayload, _method: 'PATCH', _id: selectedSpj.id}),
                 });
               } catch (sheetErr) {
                 console.warn('SheetBest sync gagal (data sudah diupdate di Firestore):', sheetErr.message);
@@ -873,7 +873,10 @@
               alert('Berhasil dihapus!');
               // Sinkron hapus ke SheetBest (opsional)
               try {
-                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${id}`, { method: 'DELETE' });
+                await fetch(`https://script.google.com/macros/s/AKfycbw7Bg-nPUQxOtyWJgUQKp0VaSE4SadAXr-iqkJLjSjiuR_jAtZsEHrxAk7SXnf42Hleqw/exec?id=${id}`, {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({_method: 'DELETE', _id: id})
+                });
               } catch (sheetErr) {
                 console.warn('SheetBest delete sync gagal (data sudah dihapus dari Firestore):', sheetErr.message);
               }
@@ -904,8 +907,8 @@
               setIsEditModalOpen(false); setEditingSpj(null);
               // Sinkron ke SheetBest (opsional)
               try {
-                await fetch(`https://api.sheetbest.com/sheets/621834c3-c8ee-4836-8e10-23f6679f0630/id/${editingSpj.id}`, {
-                  method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updatedDataPayload),
+                await fetch(`https://script.google.com/macros/s/AKfycbw7Bg-nPUQxOtyWJgUQKp0VaSE4SadAXr-iqkJLjSjiuR_jAtZsEHrxAk7SXnf42Hleqw/exec?id=${editingSpj.id}`, {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({...updatedDataPayload, _method: 'PATCH', _id: editingSpj.id}),
                 });
               } catch (sheetErr) {
                 console.warn('SheetBest sync gagal (data sudah diupdate di Firestore):', sheetErr.message);
