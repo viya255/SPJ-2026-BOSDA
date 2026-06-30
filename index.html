@@ -537,6 +537,7 @@
           const [guPilihan, setGuPilihan] = useState('');
           const [guBaruText, setGuBaruText] = useState('');
           const [guMode, setGuMode] = useState('pilih'); // 'pilih' atau 'baru'
+          const [tanggalCairInput, setTanggalCairInput] = useState('');
           const [expandedGu, setExpandedGu] = useState({});
           const [sudahCairSearch, setSudahCairSearch] = useState('');
 
@@ -969,17 +970,19 @@
             setGuMode(daftarGuList.length > 0 ? 'pilih' : 'baru');
             setGuPilihan(daftarGuList.length > 0 ? daftarGuList[daftarGuList.length - 1] : '');
             setGuBaruText(saranGuBaru());
+            setTanggalCairInput(new Date().toISOString().split('T')[0]);
             setIsCairModalOpen(true);
           };
 
           const submitPencairan = async () => {
             const guFinal = guMode === 'baru' ? guBaruText.trim() : guPilihan;
             if (!guFinal) { alert('Nama/nomor GU wajib diisi!'); return; }
+            if (!tanggalCairInput) { alert('Tanggal pencairan wajib diisi!'); return; }
             const idsTerpilih = Object.keys(selectedForCair).filter(id => selectedForCair[id]);
             const spjTerpilih = dataSpj.filter(s => idsTerpilih.includes(s.id));
             if (spjTerpilih.length === 0) { alert('Tidak ada SPJ yang dipilih.'); return; }
 
-            const today = new Date().toISOString().split('T')[0];
+            const today = tanggalCairInput;
             setIsLoading(true);
             try {
               const batch = db.batch();
@@ -2126,6 +2129,12 @@
                         <p className="text-xs text-gray-400 mt-1">Saran otomatis: <button type="button" onClick={() => setGuBaruText(saranGuBaru())} className="text-teal-600 font-semibold hover:underline">{saranGuBaru()}</button></p>
                       </div>
                     )}
+
+                    <div className="mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Pencairan</label>
+                      <input type="date" value={tanggalCairInput} onChange={(e) => setTanggalCairInput(e.target.value)}
+                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 text-sm"/>
+                    </div>
 
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 max-h-40 overflow-y-auto">
                       <p className="text-xs font-bold text-gray-500 mb-1.5">SPJ yang akan dicairkan:</p>
