@@ -1794,9 +1794,12 @@
                             <div className="flex items-center gap-3">
                               <div className="p-2 bg-teal-600 text-white rounded-lg"><IconLayers size={18}/></div>
                               <div>
-                                <p className="font-bold text-teal-800 flex items-center gap-2">
+                                <p className="font-bold text-teal-800 flex items-center gap-2 flex-wrap">
                                   {gu}
                                   <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white text-teal-700 border border-teal-200">{listSpj.length} SPJ</span>
+                                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-teal-600 text-white flex items-center gap-1">
+                                    <IconClock size={11}/> {listSpj[0]?.tanggalCair || listSpj[0]?.tanggal || '-'}
+                                  </span>
                                 </p>
                                 <p className="text-xs text-teal-600 mt-0.5">Total: <span className="font-semibold">{formatRupiah(totalGu)}</span></p>
                               </div>
@@ -1818,7 +1821,6 @@
                                     <th className="p-3 font-semibold">Instansi & Triwulan</th>
                                     <th className="p-3 font-semibold">Rincian</th>
                                     <th className="p-3 font-semibold text-right">Nominal</th>
-                                    <th className="p-3 font-semibold text-center">Tgl Cair</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -1831,7 +1833,6 @@
                                       </td>
                                       <td className="p-3 text-xs text-gray-600 max-w-[220px] truncate" title={spj.rincian}>{spj.rincian}</td>
                                       <td className="p-3 text-right font-bold text-teal-700">{formatRupiah(spj.nominal)}</td>
-                                      <td className="p-3 text-center text-xs text-gray-500">{spj.tanggalCair || spj.tanggal}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -1839,7 +1840,6 @@
                                   <tr className="bg-teal-50 font-bold text-sm">
                                     <td colSpan={3} className="p-3 text-teal-700">Total {gu}</td>
                                     <td className="p-3 text-right text-teal-700">{formatRupiah(totalGu)}</td>
-                                    <td></td>
                                   </tr>
                                 </tfoot>
                               </table>
